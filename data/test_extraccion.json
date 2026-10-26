@@ -1,0 +1,237 @@
+{
+ "ok": true,
+ "datos": {
+  "applicant": {
+   "a_number": "",
+   "ssn": "",
+   "uscis_account": "",
+   "last_name": "Pérez Rodríguez",
+   "first_name": "María Fernanda",
+   "middle_name": "",
+   "aliases": [],
+   "street": "7425 NW 32nd Ave",
+   "apt": "4",
+   "city": "Miami",
+   "state": "FL",
+   "zip": "33147",
+   "phone_area": "305",
+   "phone": "555-1234",
+   "mailing_in_care_of": "",
+   "mailing_street": "",
+   "mailing_apt": "",
+   "mailing_city": "",
+   "mailing_state": "",
+   "mailing_zip": "",
+   "mailing_phone_area": "",
+   "mailing_phone": "",
+   "gender": "Femenino",
+   "marital_status": "Soltera",
+   "dob": "1990-05-14",
+   "birth_city_country": "Caracas, Venezuela",
+   "nationality": "Venezolana",
+   "nationality_at_birth": "Venezolana",
+   "race_ethnic_group": "Mestiza",
+   "religion": "Católica",
+   "court_status": "Nunca he estado en corte de inmigración",
+   "last_left_country_date": "2022-12",
+   "i94_number": "",
+   "entries": [
+    {
+     "date": "2023-01-12",
+     "place": "El Paso, Texas",
+     "status": "Sin papeles (entrada por frontera)",
+     "status_expires": ""
+    }
+   ],
+   "passport_country": "Venezuela",
+   "passport_number": "123456789",
+   "travel_doc_number": "",
+   "passport_expiration": "2028-03-10",
+   "native_language": "Español",
+   "fluent_english": false,
+   "other_languages": "Inglés (un poco, en estudio)",
+   "cat_withholding": false
+  },
+  "spouse": {
+   "not_married": true,
+   "a_number": "",
+   "passport": "",
+   "ssn": "",
+   "dob": "",
+   "last_name": "",
+   "first_name": "",
+   "middle_name": "",
+   "maiden_name": "",
+   "marriage_date": "",
+   "marriage_place": "",
+   "birth_city_country": "",
+   "nationality": "",
+   "race_ethnic_group": "",
+   "gender": "",
+   "in_us": null,
+   "location_if_abroad": "",
+   "entry_place": "",
+   "entry_date": "",
+   "i94_number": "",
+   "entry_status": "",
+   "current_status": "",
+   "status_expiration": "",
+   "in_proceedings": null,
+   "previous_arrival_date": "",
+   "included_in_application": null
+  },
+  "has_children": false,
+  "total_children": "0",
+  "children": [],
+  "addresses_abroad": [
+   {
+    "street": "Urbanización El Paraíso, calle Los Pinos casa 12",
+    "city": "Caracas",
+    "province": "Distrito Capital",
+    "country": "Venezuela",
+    "from_date": "2010",
+    "to_date": "2022-12"
+   }
+  ],
+  "residences": [
+   {
+    "street": "7425 NW 32nd Ave apto 4",
+    "city": "Miami",
+    "province": "FL",
+    "country": "Estados Unidos",
+    "from_date": "2023-03",
+    "to_date": ""
+   }
+  ],
+  "education": [
+   {
+    "name": "Universidad Central de Venezuela",
+    "type": "Universidad (Enfermería)",
+    "location": "Caracas, Venezuela",
+    "from_date": "2010",
+    "to_date": "2015"
+   }
+  ],
+  "employment": [
+   {
+    "employer": "Por cuenta propia",
+    "occupation": "Limpieza de casas",
+    "from_date": "2023-06",
+    "to_date": ""
+   },
+   {
+    "employer": "Hospital Clínico Universitario de Caracas",
+    "occupation": "Enfermera",
+    "from_date": "2018",
+    "to_date": "2022"
+   }
+  ],
+  "mother": {
+   "name": "Carmen Rodríguez",
+   "birth_city_country": "",
+   "current_location": "Caracas, Venezuela",
+   "deceased": false
+  },
+  "father": {
+   "name": "José Pérez",
+   "birth_city_country": "",
+   "current_location": "",
+   "deceased": true
+  },
+  "siblings": [
+   {
+    "name": "Luis Pérez",
+    "birth_city_country": "",
+    "current_location": "Bogotá, Colombia",
+    "deceased": false
+   }
+  ],
+  "basis": {
+   "race": false,
+   "religion": false,
+   "nationality": false,
+   "political_opinion": true,
+   "social_group": false,
+   "torture": false,
+   "q1a_harm_experienced": {
+    "answer": true,
+    "explain": "En abril de 2019, durante una marcha de protesta contra el gobierno venezolano, fui golpeada y amenazada de muerte por los colectivos. Me perseguían por participar en protestas contra el gobierno en 2019."
+   },
+   "q1b_fear_return": {
+    "answer": true,
+    "explain": "Tengo miedo de volver a Venezuela porque me pueden matar por ser opositora al gobierno."
+   },
+   "q2_accused_detained": {
+    "answer": null,
+    "explain": ""
+   },
+   "q3a_organizations": {
+    "answer": null,
+    "explain": ""
+   },
+   "q3b_still_participating": {
+    "answer": null,
+    "explain": ""
+   },
+   "q4_torture_fear": {
+    "answer": null,
+    "explain": ""
+   }
+  },
+  "questions": {
+   "q1_family_applied": {
+    "answer": false,
+    "explain": "Ningún familiar ha pedido asilo."
+   },
+   "q2a_traveled_after_leaving": {
+    "answer": null,
+    "explain": ""
+   },
+   "q2b_other_country_status": {
+    "answer": null,
+    "explain": ""
+   },
+   "q3_ordered_harm": {
+    "answer": null,
+    "explain": ""
+   },
+   "q4_returned_to_country": {
+    "answer": null,
+    "explain": ""
+   },
+   "q5_late_filing": {
+    "answer": null,
+    "explain": ""
+   },
+   "q6_crime_arrest": {
+    "answer": false,
+    "explain": "Nunca he sido arrestada ni he estado en corte de inmigración."
+   }
+  },
+  "signature": {
+   "print_name": "María Fernanda Pérez Rodríguez",
+   "native_alphabet_name": "",
+   "date": "",
+   "assisted_by_family": null,
+   "assistants": [],
+   "prepared_by_other": null,
+   "counsel_list_provided": null,
+   "attorney_check": false,
+   "attorney_bar_number": "",
+   "attorney_uscis_account": "",
+   "preparer_signature_name": "",
+   "preparer_print_name": "",
+   "preparer_street": "",
+   "preparer_apt": "",
+   "preparer_city": "",
+   "preparer_state": "",
+   "preparer_zip": "",
+   "preparer_phone_area": "",
+   "preparer_phone": ""
+  },
+  "narrative": "Mi nombre es María Fernanda Pérez Rodríguez, nací el 14 de mayo de 1990 en Caracas, Venezuela. Soy venezolana, católica, de piel morena y grupo étnico mestiza. Estoy soltera y no tengo hijos.\n\nViví en Caracas, en la urbanización El Paraíso, calle Los Pinos casa 12, desde 2010 hasta diciembre de 2022. Trabajé como enfermera en el Hospital Clínico Universitario de Caracas de 2018 a 2022. Estudié enfermería en la Universidad Central de Venezuela de 2010 a 2015.\n\nSalí de Venezuela y entré a Estados Unidos por la frontera de Texas, por El Paso, el 12 de enero de 2023, sin papeles. Desde marzo de 2023 vivo en Miami, Florida, en 7425 NW 32nd Ave apto 4, Miami FL 33147. Actualmente trabajo limpiando casas por mi cuenta desde junio de 2023.\n\nSolicito asilo por persecución por mi opinión política. En 2019 participé en protestas contra el gobierno venezolano y por ello los colectivos me perseguían. En abril de 2019, durante una marcha, me amenazaron de muerte y me golpearon. Por eso me vine a Estados Unidos. Tengo miedo de regresar porque me pueden matar por ser opositora.\n\nMi madre se llama Carmen Rodríguez y vive en Caracas. Mi padre, José Pérez, falleció. Tengo un hermano, Luis Pérez, que vive en Bogotá, Colombia. Ningún familiar ha solicitado asilo. Nunca he estado en corte de inmigración ni he sido arrestada. Hablo español y un poco de inglés, y estoy estudiando inglés.",
+  "supplement_b_continuation": "",
+  "source_text": "[10:14] Cliente: Buenos días, quiero aplicar a asilo, le mando mis datos\n[10:16] Cliente: Mi nombre es María Fernanda Pérez Rodríguez, nací el 14 de mayo de 1990 en Caracas Venezuela\n[10:18] Cliente: soy venezolana, católica, soy morena, grupo étnico mestiza\n[10:20] Cliente: estoy soltera, sin hijos\n[10:22] Cliente: vivo en Miami desde marzo 2023, 7425 NW 32nd Ave apto 4, Miami FL 33147\n[10:23] Cliente: mi teléfono es 305-555-1234\n[10:25] Cliente: entré por la frontera de Texas, por El Paso, el 12 de enero de 2023, sin papeles\n[10:27] Cliente: mi pasaporte venezolano número 123456789 se vence el 10 de marzo de 2028\n[10:30] Cliente: antes vivía en Caracas, en la urbanización El Paraíso, calle Los Pinos casa 12, desde 2010 hasta diciembre 2022\n[10:32] Cliente: trabajaba de enfermera en el Hospital Clínico Universitario de Caracas de 2018 a 2022\n[10:34] Cliente: aquí trabajo limpiando casas por mi cuenta desde junio de 2023\n[10:36] Cliente: estudié enfermería en la Universidad Central de Venezuela de 2010 a 2015\n[10:38] Cliente: mi mamá se llama Carmen Rodríguez, vive en Caracas, mi papá falleció, se llamaba José Pérez\n[10:40] Cliente: tengo un hermano, Luis Pérez, vive en Colombia, en Bogotá\n[10:42] Cliente: me perseguían los colectivos por participar en protestas contra el gobierno en 2019\n[10:44] Cliente: me amenazaron de muerte, me golpearon en una marcha en abril de 2019, por eso me vine\n[10:46] Cliente: tengo miedo de volver, me pueden matar por ser opositora\n[10:48] Preparador: perfecto, ¿algún familiar pidió asilo antes?\n[10:49] Cliente: no, nadie, nunca he estado en corte de inmigración, nunca he sido arrestada\n[10:50] Cliente: hablo español y un poco de inglés, estoy estudiando\n",
+  "notes": ""
+ }
+}

@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -29,6 +30,20 @@ BLANK_PDF = ROOT / "data" / "i-589-open.pdf"
 OUTPUT_DIR = ROOT / "outputs"
 
 _presente = {"presente", "present", "actual", "actualidad", "hoy", "now", "current"}
+
+_GENERO = {
+    "m": "M", "masculino": "M", "male": "M", "hombre": "M", "varón": "M", "varon": "M",
+    "f": "F", "femenino": "F", "female": "F", "mujer": "F",
+}
+
+
+def _gender(value: str) -> str:
+    """Normaliza el sexo a 'M'/'F' desde valores como 'Femenino', 'female', etc."""
+    return _GENERO.get((value or "").strip().lower(), "")
+
+
+def _digits(value: str) -> str:
+    return re.sub(r"\D", "", value or "")
 
 
 def find_pdftk() -> str:
@@ -96,13 +111,13 @@ def build_values(data: I589Data) -> dict[str, str]:
         ("zip", a.zip),
     ]:
         _text(v, ap[key], fld)
-    _text(v, ap["phone_area"], a.phone_area)
-    _text(v, ap["phone"], a.phone)
+    _text(v, ap["phone_area"], _digits(a.phone_area))
+    _text(v, ap["phone"], _digits(a.phone))
     for key, fld in [
         ("mailing_in_care_of", a.mailing_in_care_of), ("mailing_street", a.mailing_street),
         ("mailing_apt", a.mailing_apt), ("mailing_city", a.mailing_city),
         ("mailing_state", a.mailing_state), ("mailing_zip", a.mailing_zip),
-        ("mailing_phone_area", a.mailing_phone_area), ("mailing_phone", a.mailing_phone),
+        ("mailing_phone_area", _digits(a.mailing_phone_area)), ("mailing_phone", _digits(a.mailing_phone)),
     ]:
         _text(v, ap[key], fld)
 
@@ -113,8 +128,8 @@ def build_values(data: I589Data) -> dict[str, str]:
     )
     _text(v, ap["other_names"], aliases)
 
-    _check(v, ap["sex_male"], a.gender.upper() == "M")
-    _check(v, ap["sex_female"], a.gender.upper() == "F")
+    _check(v, ap["sex_male"], _gender(a.gender) == "M")
+    _check(v, ap["sex_female"], _gender(a.gender) == "F")
     _check(v, ap["marital_single"], a.marital_status in ("single", "soltero", "soltera"))
     _check(v, ap["marital_married"], a.marital_status in ("married", "casado", "casada"))
     _check(v, ap["marital_divorced"], a.marital_status in ("divorced", "divorciado", "divorciada"))
@@ -169,8 +184,8 @@ def build_values(data: I589Data) -> dict[str, str]:
         _text(v, sm["entry_date"], _us_date(sp.entry_date))
         _text(v, sm["status_expiration"], _us_date(sp.status_expiration))
         _text(v, sm["previous_arrival_date"], _us_date(sp.previous_arrival_date))
-        _check(v, sm["sex_male"], sp.gender.upper() == "M")
-        _check(v, sm["sex_female"], sp.gender.upper() == "F")
+        _check(v, sm["sex_male"], _gender(sp.gender) == "M")
+        _check(v, sm["sex_female"], _gender(sp.gender) == "F")
         if sp.in_us is not None:
             _check(v, sm["in_us_yes"], sp.in_us)
             _check(v, sm["in_us_no"], not sp.in_us)
@@ -202,8 +217,8 @@ def build_values(data: I589Data) -> dict[str, str]:
         _text(v, cm["dob"], _us_date(ch.dob))
         _text(v, cm["entry_date"], _us_date(ch.entry_date))
         _text(v, cm["status_expiration"], _us_date(ch.status_expiration))
-        _check(v, cm["sex_male"], ch.gender.upper() == "M")
-        _check(v, cm["sex_female"], ch.gender.upper() == "F")
+        _check(v, cm["sex_male"], _gender(ch.gender) == "M")
+        _check(v, cm["sex_female"], _gender(ch.gender) == "F")
         if ch.in_us is not None:
             _check(v, cm["in_us_yes"], ch.in_us)
             _check(v, cm["in_us_no"], not ch.in_us)
