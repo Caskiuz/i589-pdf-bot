@@ -1,7 +1,7 @@
 # Guía de prueba — I-589 PDF Bot
 
 **Para:** Jhonatan
-**Qué es:** un sistema que toma la conversación de WhatsApp con el cliente, extrae todos los datos con inteligencia artificial, permite revisarlos y genera el Formulario I-589 de asilo **rellenado y editable**, con el código de barras 2D oficial funcionando.
+**Qué es:** un sistema que toma la conversación de WhatsApp (que pegas o importas en el sistema), extrae todos los datos con inteligencia artificial, permite revisarlos y genera el Formulario I-589 de asilo **rellenado y editable**, con el código de barras 2D oficial funcionando.
 
 ---
 
@@ -90,7 +90,22 @@ Abre el PDF descargado **en Adobe Acrobat Reader** (importante: no en el navegad
 
 ---
 
-## 5. Datos y privacidad
+## 5. Sobre la conexión con WhatsApp
+
+**Cómo funciona hoy (versión incluida):** tú pegas el texto de la conversación en el sistema (o usas el botón de ejemplo para probar). Es la forma estándar de operar: sin costos adicionales, sin configuración y sin riesgo para tu número de WhatsApp. Además, en WhatsApp puedes usar **"Exportar chat"** para enviarte la conversación y pegarla completa en el sistema.
+
+**¿Y si la quieres automática?** Para que el sistema reciba los mensajes directamente, sin copiar y pegar, hay que usar la **API oficial de WhatsApp Business de Meta (Cloud API)**. Eso requiere que tú configures y tengas:
+
+- Una **cuenta de Meta Business verificada** (trámite tuyo con Meta).
+- Un **número de teléfono dedicado** para la API (no puede ser tu WhatsApp personal en uso).
+- Un **servidor con HTTPS público** donde corra el sistema (no una computadora local).
+- Asumir el **costo por conversación** que cobra Meta (hay una capa gratuita mensual y el resto son centavos por conversación).
+
+Esa integración **es una fase adicional del proyecto** (se cotiza aparte) y depende de que tengas la cuenta de Meta lista. Sin tu cuenta configurada, la API no puede conectarse.
+
+> Nota: existen herramientas no oficiales que "conectan" WhatsApp escaneando un código QR, pero violan los términos de WhatsApp y Meta puede **bloquear tu número**. No se recomiendan para tu negocio.
+
+## 6. Datos y privacidad
 
 - Los casos se guardan **solo en la computadora donde corre el sistema** (base de datos local).
 - El texto del chat se envía a la API de DeepSeek únicamente para la extracción; no se usa para entrenar modelos.
@@ -98,7 +113,7 @@ Abre el PDF descargado **en Adobe Acrobat Reader** (importante: no en el navegad
 
 ---
 
-## 6. Qué se entrega al contratar
+## 7. Qué se entrega al contratar
 
 1. El sistema completo instalado y funcionando en tu computadora (un solo clic para abrirlo).
 2. Este formulario mapeado completo (las 12 páginas) y actualizable cuando USCIS publique una edición nueva.
