@@ -9,10 +9,13 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
-import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from app.form_update import fetch_form_bytes  # noqa: E402
+
 DATA = ROOT / "data"
 FORM_URL = "https://www.uscis.gov/sites/default/files/document/forms/i-589.pdf"
 ORIGINAL = DATA / "i-589.pdf"
@@ -22,9 +25,7 @@ OPEN = DATA / "i-589-open.pdf"
 def download() -> None:
     DATA.mkdir(exist_ok=True)
     print(f"Descargando {FORM_URL} …")
-    req = urllib.request.Request(FORM_URL, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=120) as resp, ORIGINAL.open("wb") as fh:
-        fh.write(resp.read())
+    ORIGINAL.write_bytes(fetch_form_bytes(FORM_URL))
     print(f"Guardado: {ORIGINAL} ({ORIGINAL.stat().st_size} bytes)")
 
 

@@ -212,7 +212,10 @@ bullets([
 h1("2. Lo que hay que probar (5–10 minutos)")
 h2("Paso 0 — Abrir el sistema")
 p("Entra al link. Verás arriba tres indicadores en verde: <b>IA: conectada</b>, "
-  "<b>pdftk: listo</b> y <b>Formulario: listo</b>. Abajo a la izquierda, la lista de casos.")
+  "<b>pdftk: listo</b> y <b>Formulario: 07/28/26 ✓</b>. El último indica la edición del "
+  "formulario oficial en uso; el sistema revisa por su cuenta si USCIS publicó una edición "
+  "nueva y te avisa ahí mismo (en ámbar: <b>⚠ nueva edición</b>). Abajo a la izquierda, la "
+  "lista de casos.")
 
 h2("Paso 1 — Caso de ejemplo ya preparado")
 p("Haz clic en <b>«Demo - Pérez, María»</b>. Verás un caso completo con datos de una "
@@ -331,8 +334,10 @@ bullets([
 h1("7. Qué se entrega al contratar")
 story.append(Paragraph("<b>1.</b>  El sistema completo instalado y funcionando en tu "
                        "computadora (un solo clic para abrirlo).", S["step"]))
-story.append(Paragraph("<b>2.</b>  El formulario mapeado completo (las 12 páginas) y "
-                       "actualizable cuando USCIS publique una edición nueva.", S["step"]))
+story.append(Paragraph("<b>2.</b>  El formulario mapeado completo (las 12 páginas), con "
+                       "<b>detección automática de nuevas ediciones de USCIS</b> (el indicador "
+                       "«Formulario» avisa si hay una edición nueva) y actualización asistida "
+                       "con reporte de cambios.", S["step"]))
 story.append(Paragraph("<b>3.</b>  Soporte para dejar la IA funcionando con tu propia "
                        "cuenta de DeepSeek (el costo por formulario es de centavos).", S["step"]))
 story.append(Spacer(1, 8))

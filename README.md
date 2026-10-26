@@ -39,6 +39,21 @@ python scripts/inventory.py              # regenera el inventario
 python scripts/build_mapping.py          # regenera el mapeo (revisar cambios de nombres)
 ```
 
+## Actualizaciones del formulario (USCIS)
+
+El sistema vigila la edición del formulario: al abrir la aplicación consulta la última publicada por USCIS (caché de 12 horas) y muestra el resultado en el indicador **«Formulario: 07/28/26 ✓»** (o **«⚠ nueva edición»** en ámbar si hay una edición más reciente).
+
+Actualización asistida (con reporte de cambios):
+
+```bash
+python scripts/update_form.py              # descarga, compara y reporta (sin tocar nada)
+python scripts/update_form.py --apply      # aplica si ningún campo mapeado desaparece
+python scripts/update_form.py --pdf ruta.pdf   # usa una copia local del PDF oficial
+python scripts/update_form.py --apply --force  # aplica aunque haya roturas (tras revisar)
+```
+
+El reporte lista campos **añadidos**, **eliminados** y las **llaves del mapeo afectadas**. Si un campo mapeado desaparece, el script no aplica nada (salvo `--force`) y señala qué revisar en `scripts/build_mapping.py`. Al aplicar, crea respaldos (`data/*.backup-*`) y ejecuta las pruebas.
+
 ## Uso
 
 1. **+ Nuevo caso** → escribe el nombre (ej. `García, María`).
@@ -54,6 +69,7 @@ python scripts/build_mapping.py          # regenera el mapeo (revisar cambios de
 app/
 ├── main.py            # FastAPI: API REST + frontend
 ├── db.py              # SQLite local (casos y datos)
+├── form_update.py     # Detección de edición nueva del I-589 + comparador de inventarios
 ├── schemas/i589.py    # Modelo de datos lógico del I-589 (Pydantic)
 ├── ai/client.py       # Cliente DeepSeek (API compatible con OpenAI)
 ├── ai/extractor.py    # Extracción por secciones (function calling estricto + fallback JSON)

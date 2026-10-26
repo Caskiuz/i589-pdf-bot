@@ -23,7 +23,7 @@
 ## 2. Lo que hay que probar (5–10 minutos)
 
 ### Paso 0 — Abrir el sistema
-Entra al link. Verás arriba tres indicadores en verde: **IA: conectada**, **pdftk: listo**, **Formulario: listo**. Abajo a la izquierda, la lista de casos.
+Entra al link. Verás arriba tres indicadores en verde: **IA: conectada**, **pdftk: listo**, **Formulario: 07/28/26 ✓**. El último indica la edición del formulario oficial en uso; el sistema revisa por su cuenta si USCIS publicó una edición nueva y te avisa ahí mismo (en ámbar: **⚠ nueva edición**). Abajo a la izquierda, la lista de casos.
 
 ### Paso 1 — Caso de ejemplo ya preparado
 Haz clic en **"Demo - Pérez, María"**. Verás un caso completo con datos de una solicitante venezolana de ejemplo.
@@ -120,7 +120,7 @@ Esa integración **es una fase adicional del proyecto** (se cotiza aparte) y dep
 ## 7. Qué se entrega al contratar
 
 1. El sistema completo instalado y funcionando en tu computadora (un solo clic para abrirlo).
-2. Este formulario mapeado completo (las 12 páginas) y actualizable cuando USCIS publique una edición nueva.
+2. El formulario mapeado completo (las 12 páginas), con **detección automática de nuevas ediciones de USCIS** (el indicador «Formulario» avisa si hay una edición nueva) y actualización asistida con reporte de cambios.
 3. Soporte para dejar la IA funcionando con tu propia cuenta de DeepSeek (el costo por formulario es de centavos).
 
 Cualquier duda durante la prueba, me escribes y la resolvemos en el momento.

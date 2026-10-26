@@ -17,6 +17,7 @@ header .badges{margin-left:auto; display:flex; gap:8px}
 .badge{font-size:11px; padding:3px 10px; border-radius:99px; border:1px solid var(--border); color:var(--muted)}
 .badge.on{border-color:var(--ok); color:var(--ok)}
 .badge.off{border-color:var(--err); color:var(--err)}
+.badge.warn{border-color:var(--warn); color:var(--warn)}
 main{flex:1; display:flex; min-height:0}
 aside{width:260px; background:var(--panel); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:12px}
 aside h2{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px}
@@ -632,14 +633,27 @@ const SAMPLE_CHAT = `[10:14] Cliente: Buenos días, quiero aplicar a asilo, le m
 [10:50] Cliente: hablo español y un poco de inglés, estoy estudiando`;
 $('btn-sample').addEventListener('click', ()=>{ $('chat-text').value = SAMPLE_CHAT; msg('Ejemplo cargado. Ahora pulsa «Extraer con IA».', 'warn'); });
 
-/* Health check */
+/* Health check + estado de edición del formulario */
 (async function health(){
   try{
     const h = await api('GET','/api/health');
-    const set = (id,on,label)=>{ const el=$(id); el.textContent=label; el.className='badge '+(on?'on':'off'); };
-    set('b-ia', h.ia, h.ia? 'IA: conectada' : 'IA: sin key');
-    set('b-pdftk', h.pdftk, h.pdftk? 'pdftk: listo' : 'pdftk: falta');
-    set('b-form', h.formulario, h.formulario? 'Formulario: listo' : 'Formulario: falta');
+    const set = (id,cls,label,tip)=>{ const el=$(id); el.textContent=label; el.className='badge '+cls; if(tip) el.title=tip; };
+    set('b-ia', h.ia? 'on':'off', h.ia? 'IA: conectada' : 'IA: sin key');
+    set('b-pdftk', h.pdftk? 'on':'off', h.pdftk? 'pdftk: listo' : 'pdftk: falta');
+    const ed = h.formulario_edicion ? ' ' + h.formulario_edicion : '';
+    set('b-form', h.formulario? 'on':'off', h.formulario? 'Formulario:' + ed : 'Formulario: falta');
+    if(h.formulario){
+      try{
+        const st = await api('GET','/api/formulario/estado');
+        if(st.estado === 'disponible'){
+          set('b-form','warn', 'Formulario: ' + st.edition + ' ⚠ nueva edición', st.message);
+        } else if(st.estado === 'actualizado'){
+          set('b-form','on', 'Formulario: ' + st.edition + ' ✓', st.message);
+        } else {
+          set('b-form','off', 'Formulario: ' + st.edition + ' · sin verificar', st.message);
+        }
+      }catch(e){}
+    }
   }catch(e){}
 })();
 

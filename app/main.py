@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from . import db
+from . import form_update
 from .ai.client import DeepSeekConfigError, ai_available
 from .ai.extractor import extract_all
 from .pdf.filler import BLANK_PDF, OUTPUT_DIR, fill_pdf, find_pdftk, verify_filled
@@ -45,12 +46,20 @@ class ExtractReq(BaseModel):
 
 @app.get("/api/health")
 def health() -> dict:
+    local = form_update.local_info()
     return {
         "ok": True,
         "ia": ai_available(),
         "pdftk": bool(find_pdftk() if _pdftk_safe() else False),
         "formulario": BLANK_PDF.exists(),
+        "formulario_edicion": local["edition"],
     }
+
+
+@app.get("/api/formulario/estado")
+def formulario_estado(force: bool = False) -> dict:
+    """Compara la edición local con la última publicada por USCIS (cache 12 h)."""
+    return form_update.check_status(force=force)
 
 
 def _pdftk_safe() -> bool:
