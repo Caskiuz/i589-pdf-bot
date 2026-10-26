@@ -1,0 +1,20 @@
+[10:14] Cliente: Buenos días, quiero aplicar a asilo, le mando mis datos
+[10:16] Cliente: Mi nombre es María Fernanda Pérez Rodríguez, nací el 14 de mayo de 1990 en Caracas Venezuela
+[10:18] Cliente: soy venezolana, católica, soy morena, grupo étnico mestiza
+[10:20] Cliente: estoy soltera, sin hijos
+[10:22] Cliente: vivo en Miami desde marzo 2023, 7425 NW 32nd Ave apto 4, Miami FL 33147
+[10:23] Cliente: mi teléfono es 305-555-1234
+[10:25] Cliente: entré por la frontera de Texas, por El Paso, el 12 de enero de 2023, sin papeles
+[10:27] Cliente: mi pasaporte venezolano número 123456789 se vence el 10 de marzo de 2028
+[10:30] Cliente: antes vivía en Caracas, en la urbanización El Paraíso, calle Los Pinos casa 12, desde 2010 hasta diciembre 2022
+[10:32] Cliente: trabajaba de enfermera en el Hospital Clínico Universitario de Caracas de 2018 a 2022
+[10:34] Cliente: aquí trabajo limpiando casas por mi cuenta desde junio de 2023
+[10:36] Cliente: estudié enfermería en la Universidad Central de Venezuela de 2010 a 2015
+[10:38] Cliente: mi mamá se llama Carmen Rodríguez, vive en Caracas, mi papá falleció, se llamaba José Pérez
+[10:40] Cliente: tengo un hermano, Luis Pérez, vive en Colombia, en Bogotá
+[10:42] Cliente: me perseguían los colectivos por participar en protestas contra el gobierno en 2019
+[10:44] Cliente: me amenazaron de muerte, me golpearon en una marcha en abril de 2019, por eso me vine
+[10:46] Cliente: tengo miedo de volver, me pueden matar por ser opositora
+[10:48] Preparador: perfecto, ¿algún familiar pidió asilo antes?
+[10:49] Cliente: no, nadie, nunca he estado en corte de inmigración, nunca he sido arrestada
+[10:50] Cliente: hablo español y un poco de inglés, estoy estudiando

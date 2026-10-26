@@ -1,0 +1,22 @@
+# Entorno
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secretos
+.env
+
+# Artefactos locales / regenerables
+data/i-589.pdf
+data/casos.db
+data/fields_dump.txt
+data/fields_report.txt
+data/preview/
+outputs/
+*.xfdf
+
+# Sistema
+Thumbs.db
+.DS_Store

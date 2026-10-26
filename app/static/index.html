@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I-589 PDF Bot — Preparación de Solicitudes de Asilo</title>
+<style>
+:root{
+  --bg:#0f172a; --panel:#1e293b; --panel2:#273549; --accent:#0ea5e9; --ok:#10b981;
+  --warn:#f59e0b; --err:#ef4444; --text:#e2e8f0; --muted:#94a3b8; --border:#334155;
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column}
+header{display:flex; align-items:center; gap:16px; padding:10px 20px; background:var(--panel); border-bottom:1px solid var(--border)}
+header h1{font-size:17px; font-weight:600; color:#fff}
+header .badges{margin-left:auto; display:flex; gap:8px}
+.badge{font-size:11px; padding:3px 10px; border-radius:99px; border:1px solid var(--border); color:var(--muted)}
+.badge.on{border-color:var(--ok); color:var(--ok)}
+.badge.off{border-color:var(--err); color:var(--err)}
+main{flex:1; display:flex; min-height:0}
+aside{width:260px; background:var(--panel); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:12px}
+aside h2{font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px}
+.case-list{flex:1; overflow-y:auto}
+.case-item{padding:10px 12px; border-radius:8px; cursor:pointer; margin-bottom:4px; border:1px solid transparent}
+.case-item:hover{background:var(--panel2)}
+.case-item.active{background:var(--panel2); border-color:var(--accent)}
+.case-item .name{font-size:13px; color:#fff}
+.case-item .meta{font-size:11px; color:var(--muted); margin-top:2px}
+button{background:var(--accent); color:#fff; border:none; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; font-weight:600}
+button:hover{filter:brightness(1.1)}
+button.ghost{background:transparent; border:1px solid var(--border); color:var(--text)}
+button.danger{background:var(--err)}
+button.small{padding:4px 10px; font-size:12px}
+section.content{flex:1; overflow-y:auto; padding:20px 24px}
+.toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px}
+.toolbar input[type=text]{background:var(--panel2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:8px 12px; font-size:14px; min-width:220px}
+.tabs{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:8px}
+.tab{padding:8px 14px; border-radius:8px 8px 0 0; cursor:pointer; font-size:13px; color:var(--muted); border:1px solid transparent}
+.tab:hover{color:#fff}
+.tab.active{background:var(--panel2); color:#fff; border-color:var(--border)}
+.form-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:12px 16px}
+.field{display:flex; flex-direction:column; gap:4px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11.5px; color:var(--muted); font-weight:600}
+.field label .req{color:var(--err)}
+.field input,.field select,.field textarea{background:var(--panel2); border:1px solid var(--border); color:#fff; border-radius:6px; padding:7px 10px; font-size:13px; font-family:inherit; width:100%}
+.field textarea{resize:vertical; min-height:64px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none; border-color:var(--accent)}
+.section-title{font-size:13px; font-weight:700; color:var(--accent); margin:18px 0 8px; text-transform:uppercase; letter-spacing:.05em; grid-column:1/-1}
+.array-block{border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:12px; background:var(--panel)}
+.array-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px}
+.array-head .t{font-size:13px; font-weight:600; color:#fff}
+.msg{padding:10px 14px; border-radius:8px; margin:10px 0; font-size:13px; display:none}
+.msg.show{display:block}
+.msg.error{background:rgba(239,68,68,.12); border:1px solid var(--err); color:#fca5a5}
+.msg.ok{background:rgba(16,185,129,.12); border:1px solid var(--ok); color:#6ee7b7}
+.msg.warn{background:rgba(245,158,11,.12); border:1px solid var(--warn); color:#fcd34d}
+.whatsapp-box textarea{width:100%; min-height:150px; background:#0b1220; border:1px solid var(--border); color:#d1fae5; border-radius:10px; padding:12px; font-family:Consolas,monospace; font-size:12.5px}
+.whatsapp-box{display:none; margin-bottom:14px}
+.whatsapp-box.show{display:block}
+.download-card{margin:12px 0; padding:16px; border-radius:10px; background:rgba(14,165,233,.08); border:1px solid var(--accent)}
+.download-card a{color:#7dd3fc; font-weight:600}
+.download-card .note{font-size:12px; color:var(--muted); margin-top:6px}
+.empty{padding:60px 20px; text-align:center; color:var(--muted)}
+.empty .big{font-size:40px; margin-bottom:10px}
+ul.errs{padding-left:18px}
+ul.errs li{margin:3px 0}
+.tri-row{display:flex; gap:8px}
+.tri-row label{display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text); cursor:pointer}
+@media (max-width:900px){ main{flex-direction:column} aside{width:100%; max-height:200px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 I-589 PDF Bot</h1>
+  <span style="font-size:12px;color:var(--muted)">Preparación de Solicitudes de Asilo (Form I-589)</span>
+  <div class="badges">
+    <span class="badge" id="b-ia">IA: …</span>
+    <span class="badge" id="b-pdftk">pdftk: …</span>
+    <span class="badge" id="b-form">Formulario: …</span>
+  </div>
+</header>
+<main>
+  <aside>
+    <h2>Casos</h2>
+    <button id="btn-new" style="margin-bottom:10px">+ Nuevo caso</button>
+    <div class="case-list" id="case-list"></div>
+  </aside>
+  <section class="content" id="content">
+    <div class="empty" id="empty-state">
+      <div class="big">🗂️</div>
+      <p>Selecciona un caso o crea uno nuevo para comenzar.</p>
+    </div>
+    <div id="case-view" style="display:none">
+      <div class="toolbar">
+        <input type="text" id="case-name" placeholder="Nombre del caso (ej. García, María)">
+        <button class="ghost small" id="btn-toggle-chat">💬 Chat de WhatsApp</button>
+        <button class="small" id="btn-extraer" title="Extraer datos del chat con IA">🤖 Extraer con IA</button>
+        <button class="ghost small" id="btn-validar">✔ Validar</button>
+        <button class="small" id="btn-generar">📄 Generar PDF</button>
+        <span style="flex:1"></span>
+        <button class="danger small" id="btn-delete">🗑</button>
+      </div>
+      <div class="whatsapp-box" id="whatsapp-box">
+        <textarea id="chat-text" placeholder="Pega aquí la conversación de WhatsApp con los datos del solicitante…"></textarea>
+        <div style="display:flex; gap:8px; margin-top:8px">
+          <button class="ghost small" id="btn-sample">Cargar ejemplo</button>
+          <button class="ghost small" id="btn-save-chat">Guardar texto</button>
+        </div>
+      </div>
+      <div id="msgs"></div>
+      <div class="tabs" id="tabs"></div>
+      <div id="form-area"></div>
+      <div id="download-area"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ============ Estado ============ */
+const state = { cases: [], activeId: null, activeTab: 'solicitante', data: null, raw: null };
+
+/* ============ Utilidades ============ */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function getPath(obj, path){ return path.split('.').reduce((o,k)=> o==null? o : o[k], obj); }
+function setPath(obj, path, val){
+  const keys = path.split('.'); let o = obj;
+  for(let i=0;i<keys.length-1;i++){
+    if(o[keys[i]]==null) o[keys[i]] = {};
+    o = o[keys[i]];
+  }
+  o[keys[keys.length-1]] = val;
+}
+async function api(method, url, body){
+  const res = await fetch(url, {method, headers:{'Content-Type':'application/json'}, body: body? JSON.stringify(body): undefined});
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.detail || ('Error ' + res.status));
+  return data;
+}
+function msg(text, kind='ok'){
+  const box = $('msgs');
+  box.innerHTML = `<div class="msg ${kind} show">${text}</div>`;
+}
+function clearMsgs(){ $('msgs').innerHTML=''; }
+
+/* ============ Tipos de campo ============ */
+const SEL_GENDER = [{v:'',l:'—'},{v:'M',l:'Masculino'},{v:'F',l:'Femenino'}];
+const SEL_MARITAL = [
+  {v:'',l:'—'},{v:'single',l:'Soltero/a'},{v:'married',l:'Casado/a'},
+  {v:'divorced',l:'Divorciado/a'},{v:'widowed',l:'Viudo/a'}
+];
+const SEL_COURT = [
+  {v:'',l:'—'},{v:'never',l:'A. Nunca en corte'},{v:'now',l:'B. Ahora en corte'},
+  {v:'not_now',l:'C. Ya no en corte'}
+];
+const SEL_TRI = [{v:'',l:'No respondido'},{v:'true',l:'Sí'},{v:'false',l:'No'}];
+
+function fieldInput(def, path){
+  const val = getPath(state.data, path);
+  if(def.type === 'select'){
+    const opts = def.options.map(o=>`<option value="${o.v}" ${String(val??'')===o.v?'selected':''}>${esc(o.l)}</option>`).join('');
+    return `<select data-path="${path}" data-type="select">${opts}</select>`;
+  }
+  if(def.type === 'tri'){
+    const opts = SEL_TRI.map(o=>{
+      const v = val==null? '' : (val? 'true':'false');
+      return `<option value="${o.v}" ${v===o.v?'selected':''}>${o.l}</option>`;
+    }).join('');
+    return `<select data-path="${path}" data-type="tri">${opts}</select>`;
+  }
+  if(def.type === 'textarea'){
+    return `<textarea data-path="${path}" rows="${def.rows||3}">${esc(val)}</textarea>`;
+  }
+  if(def.type === 'bool'){
+    return `<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#fff">
+      <input type="checkbox" data-path="${path}" data-type="bool" ${val?'checked':''}> ${esc(def.boolLabel||'Sí')}</label>`;
+  }
+  return `<input type="text" data-path="${path}" placeholder="${esc(def.ph||'')}" value="${esc(val)}">`;
+}
+
+function bindFormArea(){
+  $('form-area').querySelectorAll('[data-path]').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      const p = el.dataset.path;
+      if(el.dataset.type === 'bool') setPath(state.data, p, el.checked);
+      else if(el.dataset.type === 'tri') setPath(state.data, p, el.value===''? null : el.value==='true');
+      else setPath(state.data, p, el.value);
+    });
+  });
+}
+
+/* ============ Definición de pestañas ============ */
+const F = (path,label,type='text',extra={}) => ({path,label,type,...extra});
+
+const TABS = [
+ {id:'solicitante', label:'👤 Solicitante', fields:[
+   F('applicant.last_name','Apellido','text',{req:1,ph:'Pérez'}),
+   F('applicant.first_name','Nombre','text',{req:1,ph:'María'}),
+   F('applicant.middle_name','Segundo nombre'),
+   F('applicant.dob','Fecha de nacimiento','text',{req:1,ph:'1990-05-14'}),
+   F('applicant.gender','Sexo','select',{options:SEL_GENDER}),
+   F('applicant.marital_status','Estado civil','select',{options:SEL_MARITAL}),
+   F('applicant.a_number','Número A (si tiene)','text',{ph:'A 123-456-789'}),
+   F('applicant.ssn','Seguro Social (SSN)'),
+   F('applicant.uscis_account','Cuenta USCIS'),
+   F('applicant.birth_city_country','Ciudad y país de nacimiento','text',{req:1,ph:'Caracas, Venezuela'}),
+   F('applicant.nationality','Nacionalidad actual','text',{req:1}),
+   F('applicant.nationality_at_birth','Nacionalidad al nacer'),
+   F('applicant.race_ethnic_group','Grupo racial/étnico o tribal'),
+   F('applicant.religion','Religión'),
+   F('applicant.court_status','Corte de inmigración','select',{options:SEL_COURT}),
+   F('applicant.native_language','Idioma nativo'),
+   F('applicant.fluent_english','¿Habla inglés con fluidez?','tri'),
+   F('applicant.other_languages','Otros idiomas'),
+   F('applicant.cat_withholding','Aplicar también por Convención contra la Tortura','bool',{boolLabel:'Sí, marcar la casilla CAT'}),
+ ]},
+ {id:'contacto', label:'📍 Contacto y Dirección', fields:[
+   F('applicant.street','Calle y número (residencia actual)','text',{req:1}),
+   F('applicant.apt','Apartamento'),
+   F('applicant.city','Ciudad','text',{req:1}),
+   F('applicant.state','Estado','text',{ph:'FL'}),
+   F('applicant.zip','Código postal'),
+   F('applicant.phone_area','Teléfono (código de área)','text',{ph:'305'}),
+   F('applicant.phone','Teléfono (7 dígitos)','text',{ph:'5551234'}),
+   F('applicant.mailing_in_care_of','Correo a nombre de (in care of)'),
+   F('applicant.mailing_street','Dirección postal (si es distinta)'),
+   F('applicant.mailing_apt','Apto postal'),
+   F('applicant.mailing_city','Ciudad postal'),
+   F('applicant.mailing_state','Estado postal'),
+   F('applicant.mailing_zip','Código postal (postal)'),
+ ]},
+ {id:'entrada', label:'🛂 Entrada a EE. UU.', fields:[
+   F('applicant.passport_country','País que emitió el pasaporte'),
+   F('applicant.passport_number','Número de pasaporte'),
+   F('applicant.travel_doc_number','Número de documento de viaje'),
+   F('applicant.passport_expiration','Fecha de vencimiento','text',{ph:'2028-03-10'}),
+   F('applicant.last_left_country_date','Última salida del país','text',{ph:'2023-01-15'}),
+   F('applicant.i94_number','Número I-94'),
+ ]},
+ {id:'direcciones', label:'🏠 Direcciones (5 años)', fields:[]},
+ {id:'familia', label:'👨‍👩‍👧 Familia', fields:[
+   F('has_children','¿Tiene hijos?','tri'),
+   F('total_children','Total de hijos','text',{ph:'2'}),
+ ]},
+ {id:'antecedentes', label:'🌎 Antecedentes (A.III)', fields:[
+   F('mother.name','Madre — nombre completo'),
+   F('mother.birth_city_country','Madre — ciudad/país de nacimiento'),
+   F('mother.current_location','Madre — ubicación actual'),
+   F('mother.deceased','Madre — fallecida','bool'),
+   F('father.name','Padre — nombre completo'),
+   F('father.birth_city_country','Padre — ciudad/país de nacimiento'),
+   F('father.current_location','Padre — ubicación actual'),
+   F('father.deceased','Padre — fallecido','bool'),
+ ]},
+ {id:'empleo', label:'💼 Empleo y Educación', fields:[]},
+ {id:'solicitud', label:'⚖️ Solicitud (Parte B)', fields:[
+   F('basis.race','Motivo: Raza','bool'),
+   F('basis.religion','Motivo: Religión','bool'),
+   F('basis.nationality','Motivo: Nacionalidad','bool'),
+   F('basis.political_opinion','Motivo: Opinión política','bool'),
+   F('basis.social_group','Motivo: Grupo social particular','bool'),
+   F('basis.torture','Motivo: Convención contra la Tortura','bool'),
+ ]},
+ {id:'preguntas', label:'❓ Preguntas (B y C)', fields:[]},
+ {id:'firma', label:'✍️ Firma y Preparador', fields:[
+   F('signature.print_name','Nombre impreso (firma)'),
+   F('signature.native_alphabet_name','Nombre en alfabeto nativo'),
+   F('signature.date','Fecha de firma','text',{ph:'2026-10-26'}),
+   F('signature.assisted_by_family','¿Le ayudó un familiar a completar?','tri'),
+   F('signature.prepared_by_other','¿Lo preparó otra persona?','tri'),
+   F('signature.counsel_list_provided','¿Recibió lista de abogados?','tri'),
+   F('signature.attorney_check','¿Hay abogado acreditado?','bool'),
+   F('signature.attorney_bar_number','Número de barra del abogado'),
+   F('signature.attorney_uscis_account','Cuenta USCIS del abogado'),
+   F('signature.preparer_print_name','Preparador — nombre'),
+   F('signature.preparer_street','Preparador — calle'),
+   F('signature.preparer_city','Preparador — ciudad'),
+   F('signature.preparer_state','Preparador — estado'),
+   F('signature.preparer_zip','Preparador — código postal'),
+   F('signature.preparer_phone','Preparador — teléfono'),
+ ]},
+ {id:'narrativa', label:'📝 Narrativa', fields:[
+   F('narrative','Declaración de persecución (Parte B / Suplemento B)','textarea',{rows:12}),
+   F('supplement_b_continuation','Continuación (Suplemento B)','textarea',{rows:6}),
+ ]},
+];
+
+/* ============ Render de pestañas con bloques dinámicos ============ */
+function arrayBlock(title, list, template, maxItems, emptyMsg, canAdd=true){
+  let html = `<div class="section-title">${title}</div>`;
+  list.forEach((item, i)=>{
+    html += `<div class="array-block"><div class="array-head">
+      <span class="t">${title.replace(/s$|es$/,'')} ${i+1}</span>
+      <button class="danger small" data-remove="${i}">Quitar</button></div>
+      <div class="form-grid">${template.map(f=>{
+        const d = {...f, path: f.path.replace('{i}', i)};
+        return `<div class="field ${f.full?'full':''}"><label>${esc(f.label)}${f.req?' <span class="req">*</span>':''}</label>${fieldInput(d, d.path)}</div>`;
+      }).join('')}</div></div>`;
+  });
+  if(!list.length) html += `<div class="field full" style="color:var(--muted);font-size:12px">${emptyMsg}</div>`;
+  if(canAdd && list.length < maxItems)
+    html += `<button class="ghost small" data-add="1">+ Añadir (${list.length}/${maxItems})</button>`;
+  return html;
+}
+
+function renderTab(){
+  const tab = TABS.find(t=>t.id===state.activeTab);
+  if(!tab) return;
+  let html = `<div class="form-grid">`;
+  const d = state.data || {};
+  // campos simples
+  for(const f of tab.fields){
+    html += `<div class="field ${f.full?'full':''}"><label>${esc(f.label)}${f.req?' <span class="req">*</span>':''}</label>${fieldInput(f, f.path)}</div>`;
+  }
+  // bloques dinámicos por pestaña
+  if(state.activeTab==='direcciones'){
+    html += arrayBlock('Últimas direcciones en el extranjero (A.III.1)', d.addresses_abroad||[], [
+      F('addresses_abroad.{i}.street','Calle y número','text',{full:1}),
+      F('addresses_abroad.{i}.city','Ciudad'),
+      F('addresses_abroad.{i}.province','Departamento/Provincia/Estado'),
+      F('addresses_abroad.{i}.country','País'),
+      F('addresses_abroad.{i}.from_date','Desde (MM/YYYY)'),
+      F('addresses_abroad.{i}.to_date','Hasta (MM/YYYY)'),
+    ], 2, 'Sin direcciones registradas en el extranjero.');
+    html += arrayBlock('Residencias de los últimos 5 años (A.III.2)', d.residences||[], [
+      F('residences.{i}.street','Calle y número','text',{full:1}),
+      F('residences.{i}.city','Ciudad'),
+      F('residences.{i}.province','Departamento/Provincia/Estado'),
+      F('residences.{i}.country','País'),
+      F('residences.{i}.from_date','Desde (MM/YYYY)'),
+      F('residences.{i}.to_date','Hasta (MM/YYYY)'),
+    ], 5, 'Sin residencias. Se necesita al menos una (la actual).');
+  }
+  if(state.activeTab==='familia'){
+    const sp = d.spouse || {};
+    html += `<div class="section-title">Cónyuge</div>`;
+    html += `<div class="field full"><label>¿No está casado/a? (marcar en el formulario)</label>${fieldInput({type:'bool',boolLabel:'No estoy casado/a'},'spouse.not_married')}</div>`;
+    const spouseFields = [
+      F('spouse.last_name','Apellido'), F('spouse.first_name','Nombre'), F('spouse.middle_name','Segundo nombre'),
+      F('spouse.dob','Fecha de nacimiento','text',{ph:'1992-08-01'}), F('spouse.maiden_name','Apellido de soltera'),
+      F('spouse.gender','Sexo','select',{options:SEL_GENDER}),
+      F('spouse.marriage_date','Fecha de matrimonio','text',{ph:'2015-06-20'}), F('spouse.marriage_place','Lugar de matrimonio'),
+      F('spouse.birth_city_country','Ciudad y país de nacimiento'), F('spouse.nationality','Nacionalidad'),
+      F('spouse.race_ethnic_group','Grupo racial/étnico'),
+      F('spouse.a_number','Número A'), F('spouse.passport','Pasaporte/ID'), F('spouse.ssn','SSN'),
+      F('spouse.in_us','¿Está en EE. UU.?','tri'),
+      F('spouse.location_if_abroad','Ubicación si está fuera'),
+      F('spouse.entry_place','Lugar de última entrada'), F('spouse.entry_date','Fecha de última entrada','text',{ph:'2023-01-15'}),
+      F('spouse.i94_number','Número I-94'), F('spouse.entry_status','Estatus al entrar'),
+      F('spouse.current_status','Estatus actual'), F('spouse.status_expiration','Vencimiento de estancia','text',{ph:'2026-05-01'}),
+      F('spouse.in_proceedings','¿En corte de inmigración?','tri'),
+      F('spouse.included_in_application','¿Incluido/a en esta solicitud?','tri'),
+    ];
+    for(const f of spouseFields) html += `<div class="field"><label>${esc(f.label)}</label>${fieldInput(f,f.path)}</div>`;
+    html += arrayBlock('Hijos (máx. 6 — 4 en el formulario, 2 en Suplemento A)', d.children||[], [
+      F('children.{i}.last_name','Apellido','text',{req:1}), F('children.{i}.first_name','Nombre'),
+      F('children.{i}.middle_name','Segundo nombre'), F('children.{i}.dob','Fecha de nacimiento','text',{ph:'2018-03-05'}),
+      F('children.{i}.gender','Sexo','select',{options:SEL_GENDER}),
+      F('children.{i}.marital_status','Estado civil'),
+      F('children.{i}.birth_city_country','Ciudad y país de nacimiento'), F('children.{i}.nationality','Nacionalidad'),
+      F('children.{i}.race_ethnic_group','Grupo racial/étnico'),
+      F('children.{i}.a_number','Número A'), F('children.{i}.passport','Pasaporte/ID'), F('children.{i}.ssn','SSN'),
+      F('children.{i}.in_us','¿Está en EE. UU.?','tri'),
+      F('children.{i}.location_if_abroad','Ubicación si está fuera'),
+      F('children.{i}.entry_place','Lugar de última entrada'), F('children.{i}.entry_date','Fecha de última entrada','text',{ph:'2023-01-15'}),
+      F('children.{i}.i94_number','Número I-94'), F('children.{i}.entry_status','Estatus al entrar'),
+      F('children.{i}.current_status','Estatus actual'), F('children.{i}.status_expiration','Vencimiento','text',{ph:'2026-05-01'}),
+      F('children.{i}.in_proceedings','¿En corte?','tri'),
+      F('children.{i}.included_in_application','¿Incluido/a?','tri'),
+    ], 6, 'Sin hijos registrados.');
+  }
+  if(state.activeTab==='antecedentes'){
+    html += arrayBlock('Hermanos (máx. 4)', d.siblings||[], [
+      F('siblings.{i}.name','Nombre completo'),
+      F('siblings.{i}.birth_city_country','Ciudad/país de nacimiento'),
+      F('siblings.{i}.current_location','Ubicación actual'),
+      F('siblings.{i}.deceased','Fallecido/a','bool'),
+    ], 4, 'Sin hermanos registrados.');
+  }
+  if(state.activeTab==='empleo'){
+    html += arrayBlock('Educación (más reciente primero, máx. 4)', d.education||[], [
+      F('education.{i}.name','Nombre de la escuela','text',{full:1}),
+      F('education.{i}.type','Tipo (primaria, secundaria, universidad…)'),
+      F('education.{i}.location','Ubicación (dirección)'),
+      F('education.{i}.from_date','Desde (MM/YYYY)'),
+      F('education.{i}.to_date','Hasta (MM/YYYY)'),
+    ], 4, 'Sin historial educativo registrado.');
+    html += arrayBlock('Empleo de los últimos 5 años (máx. 3)', d.employment||[], [
+      F('employment.{i}.employer','Nombre y dirección del empleador','text',{full:1}),
+      F('employment.{i}.occupation','Ocupación'),
+      F('employment.{i}.from_date','Desde (MM/YYYY)'),
+      F('employment.{i}.to_date','Hasta (MM/YYYY)'),
+    ], 3, 'Sin empleos registrados.');
+  }
+  if(state.activeTab==='preguntas'){
+    const BQS = [
+      ['basis.q1a_harm_experienced','B.1A — ¿Usted o su familia sufrieron daño o amenazas?'],
+      ['basis.q1b_fear_return','B.1B — ¿Teme sufrir daño si regresa a su país?'],
+      ['basis.q2_accused_detained','B.2 — ¿Fueron acusados, arrestados o detenidos?'],
+      ['basis.q3a_organizations','B.3A — ¿Pertenecieron a organizaciones o grupos?'],
+      ['basis.q3b_still_participating','B.3B — ¿Siguen participando en esos grupos?'],
+      ['basis.q4_torture_fear','B.4 — ¿Teme ser torturado en su país?'],
+      ['questions.q1_family_applied','C.1 — ¿Familiares pidieron beneficios al gobierno de EE. UU.?'],
+      ['questions.q2a_traveled_after_leaving','C.2A — ¿Viajó por otros países tras salir?'],
+      ['questions.q2b_other_country_status','C.2B — ¿Familiares con estatus en otros países?'],
+      ['questions.q3_ordered_harm','C.3 — ¿Ordenó o participó en causar daño?'],
+      ['questions.q4_returned_to_country','C.4 — ¿Regresó al país donde sufrió daño?'],
+      ['questions.q5_late_filing','C.5 — ¿Solicita más de 1 año después de llegar?'],
+      ['questions.q6_crime_arrest','C.6 — ¿Cometió delitos o fue arrestado?'],
+    ];
+    for(const [p,label] of BQS){
+      html += `<div class="field"><label>${esc(label)}</label>${fieldInput({type:'tri'}, p+'.answer')}</div>`;
+      html += `<div class="field"><label>Explicación (si responde Sí)</label>${fieldInput({type:'textarea',rows:3}, p+'.explain')}</div>`;
+    }
+  }
+  if(state.activeTab==='firma'){
+    html += arrayBlock('Familiares que ayudaron a completar (máx. 2)', d.signature?.assistants||[], [
+      F('signature.assistants.{i}.name','Nombre'),
+      F('signature.assistants.{i}.relationship','Parentesco'),
+    ], 2, 'Sin ayudantes registrados.');
+  }
+  html += '</div>';
+  $('form-area').innerHTML = html;
+  bindFormArea();
+  // eventos de añadir/quitar en bloques
+  $('form-area').querySelectorAll('[data-add]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const tab = TABS.find(t=>t.id===state.activeTab);
+      const map = {
+        direcciones: [['addresses_abroad',2],['residences',5]],
+        familia: [['children',6]],
+        antecedentes: [['siblings',4]],
+        empleo: [['education',4],['employment',3]],
+        firma: [['signature.assistants',2]],
+      }[state.activeTab]||[];
+      // añadir al primer bloque con espacio
+      for(const [base,max] of map){
+        const arr = getPath(state.data, base)||[];
+        if(arr.length < max){ arr.push(emptyFor(base)); renderTab(); return; }
+      }
+    });
+  });
+  $('form-area').querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const i = +btn.dataset.remove;
+      const tab = TABS.find(t=>t.id===state.activeTab);
+      const map = {
+        direcciones: ['addresses_abroad','residences'],
+        familia: ['children'],
+        antecedentes: ['siblings'],
+        empleo: ['education','employment'],
+        firma: ['signature.assistants'],
+      }[state.activeTab]||[];
+      for(const base of map){
+        const arr = getPath(state.data, base)||[];
+        if(arr.length > i){ arr.splice(i,1); renderTab(); return; }
+      }
+    });
+  });
+}
+
+function emptyFor(base){
+  if(base.includes('assistants')) return {name:'',relationship:''};
+  if(base.includes('children')) return {last_name:'',first_name:'',middle_name:'',dob:'',gender:'',marital_status:'',birth_city_country:'',nationality:'',race_ethnic_group:'',a_number:'',passport:'',ssn:'',in_us:null,location_if_abroad:'',entry_place:'',entry_date:'',i94_number:'',entry_status:'',current_status:'',status_expiration:'',in_proceedings:null,included_in_application:null};
+  if(base.includes('education')) return {name:'',type:'',location:'',from_date:'',to_date:''};
+  if(base.includes('employment')) return {employer:'',occupation:'',from_date:'',to_date:''};
+  if(base.includes('siblings')) return {name:'',birth_city_country:'',current_location:'',deceased:false};
+  return {street:'',city:'',province:'',country:'',from_date:'',to_date:''};
+}
+
+function renderTabs(){
+  $('tabs').innerHTML = TABS.map(t=>
+    `<div class="tab ${t.id===state.activeTab?'active':''}" data-tab="${t.id}">${t.label}</div>`).join('');
+  $('tabs').querySelectorAll('[data-tab]').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.activeTab = el.dataset.tab; renderTabs(); renderTab(); });
+  });
+}
+
+/* ============ Casos ============ */
+async function loadCases(){
+  state.cases = await api('GET','/api/casos');
+  const list = $('case-list');
+  if(!state.cases.length){ list.innerHTML = '<div style="color:var(--muted);font-size:12px">No hay casos todavía.</div>'; return; }
+  list.innerHTML = state.cases.map(c=>`
+    <div class="case-item ${c.id===state.activeId?'active':''}" data-id="${c.id}">
+      <div class="name">${esc(c.nombre||'(sin nombre)')}</div>
+      <div class="meta">${esc(c.estado)} · ${esc(c.actualizado?.slice(0,16)?.replace('T',' ')||'')}</div>
+    </div>`).join('');
+  list.querySelectorAll('.case-item').forEach(el=>{
+    el.addEventListener('click', ()=>openCase(el.dataset.id));
+  });
+}
+
+async function openCase(id){
+  state.activeId = id;
+  const c = await api('GET', `/api/casos/${id}`);
+  state.raw = c;
+  state.data = JSON.parse(c.datos_json || '{}');
+  ensureDefaults(state.data);
+  $('empty-state').style.display = 'none';
+  $('case-view').style.display = 'block';
+  $('case-name').value = c.nombre||'';
+  $('chat-text').value = c.texto_fuente||'';
+  clearMsgs(); $('download-area').innerHTML='';
+  loadCases(); renderTabs(); renderTab();
+}
+
+function ensureDefaults(d){
+  const DEFAULTS = {
+    applicant:{aliases:[],entries:[]},
+    addresses_abroad:[], residences:[], education:[], employment:[],
+    children:[], siblings:[],
+    mother:{}, father:{},
+    basis:{q1a_harm_experienced:{},q1b_fear_return:{},q2_accused_detained:{},q3a_organizations:{},q3b_still_participating:{},q4_torture_fear:{}},
+    questions:{q1_family_applied:{},q2a_traveled_after_leaving:{},q2b_other_country_status:{},q3_ordered_harm:{},q4_returned_to_country:{},q5_late_filing:{},q6_crime_arrest:{}},
+    signature:{assistants:[]},
+    narrative:'', supplement_b_continuation:''
+  };
+  d.applicant = Object.assign({aliases:[],entries:[]}, d.applicant||{});
+  for(const k in DEFAULTS){ if(d[k]==null) d[k] = DEFAULTS[k]; }
+  d.spouse = d.spouse||{};
+  d.mother = d.mother||{}; d.father = d.father||{};
+  d.basis = Object.assign(DEFAULTS.basis, d.basis||{});
+  d.questions = Object.assign(DEFAULTS.questions, d.questions||{});
+  d.signature = Object.assign({assistants:[]}, d.signature||{});
+  d.has_children = d.has_children==null? null : d.has_children;
+}
+
+async function saveData(silent){
+  try{
+    await api('PUT', `/api/casos/${state.activeId}/datos`, state.data);
+    if(!silent) msg('✔ Datos guardados correctamente.');
+  }catch(e){ msg('❌ ' + e.message, 'error'); }
+}
+
+/* ============ Acciones ============ */
+async function doExtract(){
+  const texto = $('chat-text').value.trim();
+  if(!texto) return msg('Pega primero el texto del chat de WhatsApp.', 'error');
+  msg('🤖 Extrayendo datos con IA… puede tomar 30-60 segundos.', 'warn');
+  try{
+    const r = await api('POST', `/api/casos/${state.activeId}/extraer`, {texto});
+    state.data = r.datos; ensureDefaults(state.data);
+    $('chat-text').value = texto;
+    renderTab();
+    msg('✅ Extracción completada. Revisa y corrige los datos en cada pestaña antes de generar el PDF.');
+  }catch(e){ msg('❌ ' + e.message, 'error'); }
+}
+
+async function doValidate(){
+  await saveData(true);
+  try{
+    const r = await api('POST', `/api/casos/${state.activeId}/validar`, state.data);
+    if(r.ok){ msg(`✅ Datos completos. ${r.warnings.length? r.warnings.length+' advertencia(s) menores.':''}`); }
+    else {
+      msg(`⚠️ Faltan datos obligatorios:<ul class="errs">${r.errors.map(e=>`<li>${esc(e)}</li>`).join('')}</ul>`, 'error');
+    }
+  }catch(e){ msg('❌ ' + e.message, 'error'); }
+}
+
+async function doGenerate(){
+  await saveData(true);
+  msg('📄 Generando PDF…', 'warn');
+  try{
+    const r = await api('POST', `/api/casos/${state.activeId}/generar`, state.data);
+    if(!r.ok){
+      return msg(`⚠️ No se puede generar: faltan datos obligatorios:<ul class="errs">${r.errores.map(e=>`<li>${esc(e)}</li>`).join('')}</ul>`, 'error');
+    }
+    $('download-area').innerHTML = `
+      <div class="download-card">
+        <div style="font-weight:700;margin-bottom:6px">✅ PDF generado${r.verificado? ' y verificado' : ''}</div>
+        <a href="${r.pdf}" download="${esc(r.nombre_archivo)}">⬇ Descargar ${esc(r.nombre_archivo)}</a>
+        <div class="note">${esc(r.nota_barcode)}</div>
+        ${r.advertencias.length? `<div class="note" style="color:var(--warn)">Advertencias: ${r.advertencias.map(esc).join('; ')}</div>`:''}
+      </div>`;
+    msg('');
+  }catch(e){ msg('❌ ' + e.message, 'error'); }
+}
+
+/* ============ Inicialización ============ */
+$('btn-new').addEventListener('click', async ()=>{
+  const nombre = prompt('Nombre del caso (ej. García, María):') || 'Nuevo caso';
+  const c = await api('POST','/api/casos',{nombre, texto:''});
+  await loadCases(); openCase(c.id);
+});
+$('btn-toggle-chat').addEventListener('click', ()=> $('whatsapp-box').classList.toggle('show'));
+$('btn-extraer').addEventListener('click', doExtract);
+$('btn-validar').addEventListener('click', doValidate);
+$('btn-generar').addEventListener('click', doGenerate);
+$('btn-save-chat').addEventListener('click', async ()=>{
+  await api('PUT', `/api/casos/${state.activeId}/texto`, {texto: $('chat-text').value});
+  msg('💾 Texto del chat guardado.');
+});
+$('case-name').addEventListener('change', async ()=>{
+  await api('PUT', `/api/casos/${state.activeId}`, {nombre: $('case-name').value});
+  msg('💾 Nombre actualizado.');
+});
+$('btn-delete').addEventListener('click', async ()=>{
+  if(!confirm('¿Eliminar este caso?')) return;
+  await fetch(`/api/casos/${state.activeId}`, {method:'DELETE'}).catch(()=>{});
+  state.activeId = null; state.data = null;
+  $('case-view').style.display='none'; $('empty-state').style.display='block';
+  await loadCases();
+});
+
+/* Ejemplo de conversación */
+const SAMPLE_CHAT = `[10:14] Cliente: Buenos días, quiero aplicar a asilo, le mando mis datos
+[10:16] Cliente: Mi nombre es María Fernanda Pérez Rodríguez, nací el 14 de mayo de 1990 en Caracas Venezuela
+[10:18] Cliente: soy venezolana, católica, soy morena, grupo étnico mestiza
+[10:20] Cliente: estoy soltera, sin hijos
+[10:22] Cliente: vivo en Miami desde marzo 2023, 7425 NW 32nd Ave apto 4, Miami FL 33147
+[10:23] Cliente: mi teléfono es 305-555-1234
+[10:25] Cliente: entré por la frontera de Texas, por El Paso, el 12 de enero de 2023, sin papeles
+[10:27] Cliente: mi pasaporte venezolano número 123456789 se vence el 10 de marzo de 2028
+[10:30] Cliente: antes vivía en Caracas, en la urbanización El Paraíso, calle Los Pinos casa 12, desde 2010 hasta diciembre 2022
+[10:32] Cliente: trabajaba de enfermera en el Hospital Clínico Universitario de Caracas de 2018 a 2022
+[10:34] Cliente: aquí trabajo limpiando casas por mi cuenta desde junio de 2023
+[10:36] Cliente: estudié enfermería en la Universidad Central de Venezuela de 2010 a 2015
+[10:38] Cliente: mi mamá se llama Carmen Rodríguez, vive en Caracas, mi papá falleció, se llamaba José Pérez
+[10:40] Cliente: tengo un hermano, Luis Pérez, vive en Colombia, en Bogotá
+[10:42] Cliente: me perseguían los colectivos por participar en protestas contra el gobierno en 2019
+[10:44] Cliente: me amenazaron de muerte, me golpearon en una marcha en abril de 2019, por eso me vine
+[10:46] Cliente: tengo miedo de volver, me pueden matar por ser opositora
+[10:48] Preparador: perfecto, ¿algún familiar pidió asilo antes? 
+[10:49] Cliente: no, nadie, nunca he estado en corte de inmigración, nunca he sido arrestada
+[10:50] Cliente: hablo español y un poco de inglés, estoy estudiando`;
+$('btn-sample').addEventListener('click', ()=>{ $('chat-text').value = SAMPLE_CHAT; msg('Ejemplo cargado. Ahora pulsa «Extraer con IA».', 'warn'); });
+
+/* Health check */
+(async function health(){
+  try{
+    const h = await api('GET','/api/health');
+    const set = (id,on,label)=>{ const el=$(id); el.textContent=label; el.className='badge '+(on?'on':'off'); };
+    set('b-ia', h.ia, h.ia? 'IA: conectada' : 'IA: sin key');
+    set('b-pdftk', h.pdftk, h.pdftk? 'pdftk: listo' : 'pdftk: falta');
+    set('b-form', h.formulario, h.formulario? 'Formulario: listo' : 'Formulario: falta');
+  }catch(e){}
+})();
+
+loadCases();
+</script>
+</body>
+</html>
