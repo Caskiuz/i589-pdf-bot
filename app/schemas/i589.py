@@ -8,7 +8,67 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+
+_GENERO = {
+    "m": "M", "male": "M", "masculino": "M", "hombre": "M", "varon": "M", "varón": "M",
+    "f": "F", "female": "F", "femenino": "F", "mujer": "F",
+}
+
+_ESTADO_CIVIL = {
+    "single": "single", "soltero": "single", "soltera": "single",
+    "married": "married", "casado": "married", "casada": "married",
+    "divorced": "divorced", "divorciado": "divorced", "divorciada": "divorced",
+    "widowed": "widowed", "viudo": "widowed", "viuda": "widowed",
+}
+
+_CORTE = {
+    "never": "never", "nunca": "never", "a": "never",
+    "now": "now", "ahora": "now", "actualmente": "now", "b": "now",
+    "not_now": "not_now", "ya no": "not_now", "c": "not_now",
+}
+
+
+def normalize_gender(value: str) -> str:
+    t = (value or "").strip().lower()
+    if t in _GENERO:
+        return _GENERO[t]
+    if "femen" in t or "mujer" in t:
+        return "F"
+    if "mascul" in t or "hombre" in t or "varón" in t or "varon" in t:
+        return "M"
+    return ""
+
+
+def normalize_marital(value: str) -> str:
+    t = (value or "").strip().lower()
+    if t in _ESTADO_CIVIL:
+        return _ESTADO_CIVIL[t]
+    if "solter" in t:
+        return "single"
+    if "casad" in t:
+        return "married"
+    if "divorciad" in t:
+        return "divorced"
+    if "viud" in t:
+        return "widowed"
+    return ""
+
+
+def normalize_court(value: str) -> str:
+    t = (value or "").strip().lower()
+    if not t:
+        return ""
+    if t in _CORTE:
+        return _CORTE[t]
+    if "nunca" in t or "never" in t:
+        return "never"
+    if "ya no" in t or "not now" in t:
+        return "not_now"
+    if "ahora" in t or "actualmente" in t or "current" in t:
+        return "now"
+    return ""
 
 
 class Alias(BaseModel):
@@ -25,6 +85,7 @@ class Applicant(BaseModel):
     last_name: str = ""
     first_name: str = ""
     middle_name: str = ""
+    other_names: str = ""       # otros nombres usados (texto libre)
     aliases: List[Alias] = Field(default_factory=list)
     street: str = ""
     apt: str = ""
@@ -61,6 +122,21 @@ class Applicant(BaseModel):
     fluent_english: Optional[bool] = None
     other_languages: str = ""
     cat_withholding: bool = True  # convención contra la tortura: casilla al inicio
+
+    @field_validator("gender", mode="before")
+    @classmethod
+    def _v_gender(cls, v):
+        return normalize_gender(v if isinstance(v, str) else "")
+
+    @field_validator("marital_status", mode="before")
+    @classmethod
+    def _v_marital(cls, v):
+        return normalize_marital(v if isinstance(v, str) else "")
+
+    @field_validator("court_status", mode="before")
+    @classmethod
+    def _v_court(cls, v):
+        return normalize_court(v if isinstance(v, str) else "")
 
 
 class Entry(BaseModel):
@@ -110,6 +186,11 @@ class Spouse(BaseModel):
     previous_arrival_date: str = ""
     included_in_application: Optional[bool] = None
 
+    @field_validator("gender", mode="before")
+    @classmethod
+    def _v_gender(cls, v):
+        return normalize_gender(v if isinstance(v, str) else "")
+
 
 class Child(BaseModel):
     """Parte A.II — Hijo(a)."""
@@ -135,6 +216,16 @@ class Child(BaseModel):
     status_expiration: str = ""
     in_proceedings: Optional[bool] = None
     included_in_application: Optional[bool] = None
+
+    @field_validator("gender", mode="before")
+    @classmethod
+    def _v_gender(cls, v):
+        return normalize_gender(v if isinstance(v, str) else "")
+
+    @field_validator("marital_status", mode="before")
+    @classmethod
+    def _v_marital(cls, v):
+        return normalize_marital(v if isinstance(v, str) else "")
 
 
 class Employment(BaseModel):

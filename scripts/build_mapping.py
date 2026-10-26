@@ -413,7 +413,6 @@ mapping = {
     },
 
     "preparer": {
-        "signature_name": F("PtE_PreparerSignature[0]"),
         "print_name": F("PtE_PreparerName[0]"),
         "street": F("PtE_StreetNumAndName[0]"),
         "apt": F("PtE_AptNumber[0]"),
@@ -428,14 +427,15 @@ mapping = {
         "a_number": F("PtAILine1_ANumber[1]"),
         "applicant_name": F("ApplicantName[0]"),
         "date": F("DateTimeField57[0]"),
-        "signature_name": F("TextField28[0]"),
     },
 
     "supplement_b": {
         "a_number": F("PtAILine1_ANumber[2]"),
         "applicant_name": F("SupBApplicantName[0]"),
         "date": F("DateTimeField58[0]"),
-        "continuation": [F("TextField31[0]"), F("TextField31[1]"), F("TextField32[0]")],
+        # Campo grande multilínea de continuación (540x492pt). Los TextField31
+        # son casillas diminutas de "correcciones número X a Y": NO se usan.
+        "continuation": F("TextField32[0]"),
     },
 }
 

@@ -29,8 +29,6 @@ CONFIG = ROOT / "config" / "i589_mapping.json"
 BLANK_PDF = ROOT / "data" / "i-589-open.pdf"
 OUTPUT_DIR = ROOT / "outputs"
 
-_presente = {"presente", "present", "actual", "actualidad", "hoy", "now", "current"}
-
 _GENERO = {
     "m": "M", "masculino": "M", "male": "M", "hombre": "M", "varón": "M", "varon": "M",
     "f": "F", "femenino": "F", "female": "F", "mujer": "F",
@@ -89,13 +87,6 @@ def _set_bool(values: dict, node: dict, value: bool | None) -> None:
         _check(values, node, value)
 
 
-def _chunks(text: str, size: int = 1500) -> list[str]:
-    text = (text or "").strip()
-    if not text:
-        return []
-    return [text[i : i + size] for i in range(0, len(text), size)]
-
-
 def build_values(data: I589Data) -> dict[str, str]:
     """Convierte I589Data en {campo_completo: valor} listo para XFDF."""
     m = _load_mapping()
@@ -126,7 +117,7 @@ def build_values(data: I589Data) -> dict[str, str]:
         for al in a.aliases
         if any([al.first_name, al.last_name, al.middle_name])
     )
-    _text(v, ap["other_names"], aliases)
+    _text(v, ap["other_names"], a.other_names.strip() or aliases)
 
     _check(v, ap["sex_male"], _gender(a.gender) == "M")
     _check(v, ap["sex_female"], _gender(a.gender) == "F")
@@ -151,7 +142,10 @@ def build_values(data: I589Data) -> dict[str, str]:
         _text(v, ap[f"entry{idx}_date"], _us_date(entry.date))
         _text(v, ap[f"entry{idx}_place"], entry.place)
         _text(v, ap[f"entry{idx}_status"], entry.status)
-        _text(v, ap[f"entry{idx}_status_expires"], _us_date(entry.status_expires))
+        # Solo la entrada más reciente tiene columna "date status expires" en el formulario
+        expires_key = f"entry{idx}_status_expires"
+        if expires_key in ap:
+            _text(v, ap[expires_key], _us_date(entry.status_expires))
 
     _text(v, ap["passport_country"], a.passport_country)
     _text(v, ap["passport_number"], a.passport_number)
@@ -200,7 +194,10 @@ def build_values(data: I589Data) -> dict[str, str]:
     if data.has_children is not None:
         _check(v, m["children_flag"]["has_children"], data.has_children)
         _check(v, m["children_flag"]["no_children"], not data.has_children)
-    _text(v, m["children_flag"]["total"], data.total_children or (str(len(data.children)) if data.children else ""))
+    total = data.total_children.strip() or (
+        str(len(data.children)) if data.children else ("0" if data.has_children is False else "")
+    )
+    _text(v, m["children_flag"]["total"], total)
     for idx, ch in enumerate(data.children[:6], 1):
         cm = m["children"][str(idx)]
         for key, fld in [
@@ -302,12 +299,21 @@ def build_values(data: I589Data) -> dict[str, str]:
         "5": data.questions.q5_late_filing,
         "6": data.questions.q6_crime_arrest,
     }
+    # El formulario usa UNA sola caja de explicación para 2A y 2B: se concatenan.
+    q2_shared = " ".join(
+        t for t in (
+            data.questions.q2a_traveled_after_leaving.explain.strip(),
+            data.questions.q2b_other_country_status.explain.strip(),
+        ) if t
+    )
     for key, q in cmap.items():
         qm = m["c_questions"][key]
         if q.answer is not None:
             _check(v, qm["yes"], q.answer)
             _check(v, qm["no"], not q.answer)
-        if "explain" in qm:
+        if key == "2b":
+            _text(v, qm["explain"], q2_shared)
+        elif "explain" in qm:
             _text(v, qm["explain"], q.explain)
 
     # ---------- Partes D/E: firma y preparador ----------
@@ -331,7 +337,6 @@ def build_values(data: I589Data) -> dict[str, str]:
 
     if sg.preparer_print_name:
         pm = m["preparer"]
-        _text(v, pm["signature_name"], sg.preparer_signature_name or sg.preparer_print_name)
         _text(v, pm["print_name"], sg.preparer_print_name)
         _text(v, pm["street"], sg.preparer_street)
         _text(v, pm["apt"], sg.preparer_apt)
@@ -339,7 +344,7 @@ def build_values(data: I589Data) -> dict[str, str]:
         _text(v, pm["state"], sg.preparer_state)
         _text(v, pm["zip"], sg.preparer_zip)
         _text(v, pm["phone_area"], sg.preparer_phone_area)
-        _text(v, pm["phone"], sg.preparer_phone)
+        _text(v, pm["phone"], _digits(sg.preparer_phone))
 
     # ---------- Suplementos ----------
     full_name = f"{a.first_name} {a.middle_name} {a.last_name}".replace("  ", " ").strip()
@@ -351,9 +356,12 @@ def build_values(data: I589Data) -> dict[str, str]:
     _text(v, sb["a_number"], a.a_number)
     _text(v, sb["applicant_name"], full_name)
     _text(v, sb["date"], date.today().strftime("%m/%d/%Y"))
-    narrative_parts = _chunks(data.narrative + ("\n\n" + data.supplement_b_continuation if data.supplement_b_continuation else ""))
-    for node, chunk in zip(sb["continuation"], narrative_parts):
-        _text(v, node, chunk)
+    # Narrativa: un solo campo multilínea grande (Suplemento B). Si excede el espacio,
+    # la validación advierte para adjuntar páginas adicionales (no se trunca en silencio).
+    narrative_text = data.narrative.strip()
+    if data.supplement_b_continuation.strip():
+        narrative_text = (narrative_text + "\n\n" + data.supplement_b_continuation.strip()).strip()
+    _text(v, sb["continuation"], narrative_text)
 
     return v
 

@@ -191,6 +191,9 @@ h1("1. Qué es y qué necesitas para probar")
 p("El sistema toma la conversación de WhatsApp (que pegas o importas), extrae todos los "
   "datos con inteligencia artificial, te permite revisarlos y genera el Formulario I-589 "
   "de asilo <b>rellenado y editable</b>, con el código de barras 2D oficial funcionando.")
+p("<b>Importante:</b> el formulario final se completa <b>en inglés</b>, porque USCIS lo exige. "
+  "La IA traduce automáticamente los datos del chat (aunque la conversación esté en español) y "
+  "la interfaz de trabajo sigue en español para ti.")
 callout([
     Paragraph("<b>Link de prueba</b><br/>"
               '<a href="https://monica-mattress-fixed-combo.trycloudflare.com" '
@@ -232,11 +235,16 @@ p("<b>Qué hace el sistema:</b> envía la conversación a DeepSeek (IA) en cuatr
   "información estructurada. No inventa datos: si algo no está en el chat, el campo queda vacío.")
 p("<b>Qué debes ver:</b> las pestañas se llenan solas con nombre, fecha de nacimiento, "
   "dirección, entrada al país, familia, empleos, educación, motivo de la solicitud y la "
-  "narrativa de persecución.")
+  "narrativa de persecución. Los valores aparecen en inglés porque así lo exige USCIS; la "
+  "interfaz sigue en español.")
 
 h2("Paso 3 — Revisar y corregir (así se trabaja en la vida real)")
 p("Modifica cualquier campo (por ejemplo, cambia un teléfono o completa un dato que falte). "
   "Los cambios se guardan automáticamente en el caso.")
+p("<b>Sobre los campos vacíos:</b> es normal que queden vacíos los datos que no se mencionaron "
+  "en el chat o que son opcionales (segundo nombre, SSN, número A, dirección postal si es igual "
+  "a la residencia). El sistema no inventa datos. El botón <b>Validar</b> te dice si falta algo "
+  "crítico para poder generar el formulario.")
 p("<b>Qué demuestra:</b> la IA propone, el preparador humano confirma y corrige. Nada se "
   "genera sin supervisión.")
 
@@ -251,7 +259,7 @@ p("Clic en <b>«Generar PDF»</b>. Aparece el enlace <b>«Descargar»</b>. Desca
 p("<b>Qué hace el sistema:</b> crea un archivo de datos (XFDF) con toda la información y lo "
   "fusiona con el formulario oficial de USCIS (edición 07/28/26) usando pdftk. <b>No aplana "
   "el PDF</b>: todos los campos quedan editables y el JavaScript interno del formulario se "
-  "mantiene intacto.")
+  "mantiene intacto. La narrativa de persecución se escribe completa en el Suplemento B.")
 
 h2("Paso 6 — La prueba clave: el código de barras")
 p("Abre el PDF descargado <b>en Adobe Acrobat Reader</b> (importante: no en el navegador).")

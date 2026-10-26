@@ -63,6 +63,12 @@ SYSTEM_PROMPT = (
     "extraer datos del texto de una conversación de WhatsApp entre un cliente y un "
     "preparador de formularios migratorios, para llenar el Formulario I-589 (solicitud "
     "de asilo).\n"
+    "REGLA DE IDIOMA (CRÍTICA): USCIS exige el formulario completado en INGLÉS. Todos los "
+    "valores que devuelvas deben estar en inglés: traduce países, ciudades (si tienen "
+    "nombre en inglés: Mexico, United States, Spain...), ocupaciones, religiones, grupos "
+    "étnicos, estatus migratorios, explicaciones y la narrativa. Los nombres propios de "
+    "personas y las direcciones se dejan tal cual (sin traducir). La narrativa debe ser "
+    "una declaración en primera persona, en inglés natural y profesional.\n"
     "REGLAS ESTRICTAS:\n"
     "1. Extrae SOLO información del SOLICITANTE de asilo (no del preparador).\n"
     "2. El texto es desordenado e informal: normaliza nombres, fechas y direcciones.\n"
@@ -70,11 +76,13 @@ SYSTEM_PROMPT = (
     "conoce el mes; cadena vacía \"\" si no se menciona.\n"
     "4. NUNCA inventes datos. Si un dato no está en el texto, deja el campo vacío "
     "(\"\" para texto, null para opciones booleanas).\n"
-    "5. Nombres con iniciales en mayúscula. Países y ciudades con su nombre completo "
-    "en español o inglés como aparezcan.\n"
+    "5. Nombres con iniciales en mayúscula.\n"
     "6. Si el texto menciona varios valores (p. ej. varias direcciones o empleos), "
     "inclúyelos todos como elementos de la lista, el más reciente primero.\n"
-    "7. Responde SIEMPRE con la estructura de datos solicitada."
+    "7. Usa EXACTAMENTE estos códigos: sexo \"M\" o \"F\"; estado civil \"single\", "
+    "\"married\", \"divorced\" o \"widowed\"; corte de inmigración \"never\" (nunca), "
+    "\"now\" (ahora) o \"not_now\" (ya no).\n"
+    "8. Responde SIEMPRE con la estructura de datos solicitada."
 )
 
 
@@ -275,4 +283,11 @@ def extract_all(text: str) -> I589Data:
         .replace("  ", " ")
         .strip()
     )
+    # Derivación: volcar los alias extraídos al campo editable "otros nombres usados"
+    if not data.applicant.other_names:
+        data.applicant.other_names = "; ".join(
+            f"{al.first_name} {al.middle_name} {al.last_name}".replace("  ", " ").strip()
+            for al in data.applicant.aliases
+            if any([al.first_name, al.last_name, al.middle_name])
+        )
     return data

@@ -3,6 +3,8 @@
 **Para:** Jhonatan
 **Qué es:** un sistema que toma la conversación de WhatsApp (que pegas o importas en el sistema), extrae todos los datos con inteligencia artificial, permite revisarlos y genera el Formulario I-589 de asilo **rellenado y editable**, con el código de barras 2D oficial funcionando.
 
+> **Importante:** el formulario final se completa **en inglés**, porque USCIS lo exige así. La IA traduce automáticamente los datos del chat (aunque la conversación esté en español) y la interfaz de trabajo sigue en español para ti.
+
 ---
 
 ## 1. Link de prueba
@@ -38,10 +40,12 @@ Recorre las pestañas: **Solicitante, Contacto y Dirección, Entrada a EE. UU., 
 
 👉 **Lo que hace el sistema:** envía la conversación a DeepSeek (IA) en 4 llamadas independientes (datos personales, familia, antecedentes, solicitud) y devuelve la información estructurada. No inventa datos: si algo no está en el chat, el campo queda vacío.
 
-👉 **Lo que debes ver:** las pestañas se llenan solas con nombre, fecha de nacimiento, dirección, entrada al país, familia, empleos, educación, motivo de la solicitud y la narrativa de persecución.
+👉 **Lo que debes ver:** las pestañas se llenan solas con nombre, fecha de nacimiento, dirección, entrada al país, familia, empleos, educación, motivo de la solicitud y la narrativa de persecución. Los valores aparecen en inglés porque así lo exige USCIS; la interfaz sigue en español.
 
 ### Paso 3 — Revisar y corregir (así se trabaja en la vida real)
 Modifica cualquier campo (por ejemplo, cambia un teléfono o completa un dato que falte). Los cambios se guardan automáticamente en el caso.
+
+👉 **Sobre los campos vacíos:** es normal que queden vacíos los datos que no se mencionaron en el chat o que son opcionales (segundo nombre, SSN, número A, dirección postal si es igual a la residencia). El sistema no inventa datos. El botón **Validar** te dice si falta algo crítico para poder generar el formulario.
 
 👉 **Lo que demuestra:** la IA propone, el preparador humano confirma y corrige. Nada se genera sin supervisión.
 
@@ -55,7 +59,7 @@ Clic en **"✔ Validar"**.
 ### Paso 5 — Generar el PDF
 Clic en **"📄 Generar PDF"**. Aparece el enlace **"⬇ Descargar"**. Descarga el archivo.
 
-👉 **Lo que hace el sistema:** crea un archivo de datos (XFDF) con toda la información y lo fusiona con el formulario oficial de USCIS (edición 07/28/26) usando pdftk. **No aplana el PDF**: todos los campos quedan editables y el JavaScript interno del formulario se mantiene intacto.
+👉 **Lo que hace el sistema:** crea un archivo de datos (XFDF) con toda la información y lo fusiona con el formulario oficial de USCIS (edición 07/28/26) usando pdftk. **No aplana el PDF**: todos los campos quedan editables y el JavaScript interno del formulario se mantiene intacto. La narrativa de persecución se escribe completa en el Suplemento B.
 
 ### Paso 6 — La prueba clave: el código de barras
 Abre el PDF descargado **en Adobe Acrobat Reader** (importante: no en el navegador).

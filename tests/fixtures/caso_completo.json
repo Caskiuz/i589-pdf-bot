@@ -6,6 +6,7 @@
     "last_name": "Pérez Rodríguez",
     "first_name": "María Fernanda",
     "middle_name": "",
+    "other_names": "",
     "aliases": [],
     "street": "7425 NW 32nd Ave",
     "apt": "4",
@@ -26,21 +27,21 @@
     "marital_status": "single",
     "dob": "1990-05-14",
     "birth_city_country": "Caracas, Venezuela",
-    "nationality": "Venezuela",
-    "nationality_at_birth": "Venezuela",
-    "race_ethnic_group": "Mestiza",
-    "religion": "Católica",
+    "nationality": "Venezuelan",
+    "nationality_at_birth": "Venezuelan",
+    "race_ethnic_group": "Mestizo (mixed)",
+    "religion": "Catholic",
     "court_status": "never",
     "last_left_country_date": "2022-12-20",
     "i94_number": "",
     "entries": [
-      {"date": "2023-01-12", "place": "El Paso, Texas", "status": "Entró sin inspección", "status_expires": ""}
+      {"date": "2023-01-12", "place": "El Paso, Texas", "status": "Entered without inspection", "status_expires": ""}
     ],
     "passport_country": "Venezuela",
     "passport_number": "123456789",
     "travel_doc_number": "",
     "passport_expiration": "2028-03-10",
-    "native_language": "Español",
+    "native_language": "Spanish",
     "fluent_english": false,
     "other_languages": "",
     "cat_withholding": true
@@ -50,22 +51,22 @@
   "total_children": "0",
   "children": [],
   "addresses_abroad": [
-    {"street": "Calle Los Pinos, casa 12", "city": "Caracas", "province": "Distrito Capital", "country": "Venezuela", "from_date": "01/2010", "to_date": "12/2022"}
+    {"street": "Calle Los Pinos, casa 12", "city": "Caracas", "province": "Capital District", "country": "Venezuela", "from_date": "01/2010", "to_date": "12/2022"}
   ],
   "residences": [
-    {"street": "7425 NW 32nd Ave, apto 4", "city": "Miami", "province": "FL", "country": "Estados Unidos", "from_date": "03/2023", "to_date": "Presente"}
+    {"street": "7425 NW 32nd Ave, apt 4", "city": "Miami", "province": "FL", "country": "United States", "from_date": "03/2023", "to_date": "Present"}
   ],
   "education": [
-    {"name": "Universidad Central de Venezuela", "type": "Universidad", "location": "Caracas, Venezuela", "from_date": "09/2010", "to_date": "07/2015"}
+    {"name": "Central University of Venezuela", "type": "University", "location": "Caracas, Venezuela", "from_date": "09/2010", "to_date": "07/2015"}
   ],
   "employment": [
-    {"employer": "Trabajo independiente (limpieza de casas)", "occupation": "Limpiadora", "from_date": "06/2023", "to_date": "Presente"},
-    {"employer": "Hospital Clínico Universitario", "occupation": "Enfermera", "from_date": "01/2018", "to_date": "12/2022"}
+    {"employer": "Self-employed (house cleaning)", "occupation": "House cleaner", "from_date": "06/2023", "to_date": "Present"},
+    {"employer": "University Clinical Hospital", "occupation": "Nurse", "from_date": "01/2018", "to_date": "12/2022"}
   ],
   "mother": {"name": "Carmen Rodríguez", "birth_city_country": "Caracas, Venezuela", "current_location": "Caracas, Venezuela", "deceased": false},
   "father": {"name": "José Pérez", "birth_city_country": "Caracas, Venezuela", "current_location": "", "deceased": true},
   "siblings": [
-    {"name": "Luis Pérez", "birth_city_country": "Caracas, Venezuela", "current_location": "Bogotá, Colombia", "deceased": false}
+    {"name": "Luis Pérez", "birth_city_country": "Caracas, Venezuela", "current_location": "Bogota, Colombia", "deceased": false}
   ],
   "basis": {
     "race": false,
@@ -74,12 +75,12 @@
     "political_opinion": true,
     "social_group": false,
     "torture": false,
-    "q1a_harm_experienced": {"answer": true, "explain": "Fui golpeada durante una marcha opositora en abril de 2019 en Caracas. Miembros de colectivos armados me amenazaron de muerte por participar en protestas contra el gobierno."},
-    "q1b_fear_return": {"answer": true, "explain": "Temo que me maten si regreso a Venezuela por ser opositora. Los colectivos ya me identificaron y me amenazaron directamente."},
+    "q1a_harm_experienced": {"answer": true, "explain": "I was beaten during an opposition march in April 2019 in Caracas. Armed pro-government colectivos threatened to kill me for participating in protests against the government."},
+    "q1b_fear_return": {"answer": true, "explain": "I fear they will kill me if I return to Venezuela because I am an opposition supporter. The colectivos have already identified me and threatened me directly."},
     "q2_accused_detained": {"answer": false, "explain": ""},
     "q3a_organizations": {"answer": false, "explain": ""},
     "q3b_still_participating": {"answer": false, "explain": ""},
-    "q4_torture_fear": {"answer": true, "explain": "Temo ser torturada por el régimen si regreso, por mi participación política."}
+    "q4_torture_fear": {"answer": true, "explain": "I fear being tortured by the regime if I return, because of my political participation."}
   },
   "questions": {
     "q1_family_applied": {"answer": false, "explain": ""},
@@ -111,7 +112,7 @@
     "preparer_phone_area": "",
     "preparer_phone": ""
   },
-  "narrative": "Soy María Fernanda Pérez Rodríguez, ciudadana venezolana, nacida el 14 de mayo de 1990 en Caracas. Solicito asilo porque fui perseguida en mi país por mi opinión política. En 2019 participé activamente en protestas contra el gobierno. En abril de 2019, durante una marcha en Caracas, fui golpeada por miembros de colectivos armados afines al régimen. Posteriormente recibí amenazas de muerte en mi casa y en mi lugar de trabajo. Temí por mi vida y decidí salir del país en diciembre de 2022. Entré a Estados Unidos el 12 de enero de 2023 por El Paso, Texas. Si regreso a Venezuela, temo ser detenida, torturada o asesinada por mi historial de participación política opositora. Solicito respetuosamente que se me conceda asilo.",
+  "narrative": "I am María Fernanda Pérez Rodríguez, a Venezuelan citizen born on May 14, 1990, in Caracas. I am applying for asylum because I was persecuted in my country for my political opinion. In 2019, I actively participated in protests against the government. In April 2019, during a march in Caracas, I was beaten by members of armed pro-government colectivos. I subsequently received death threats at my home and at my workplace. I feared for my life and decided to leave the country in December 2022. I entered the United States on January 12, 2023, through El Paso, Texas. If I return to Venezuela, I fear being detained, tortured, or killed because of my history of opposition political activity. I respectfully request that asylum be granted to me.",
   "supplement_b_continuation": "",
   "source_text": "",
   "notes": ""

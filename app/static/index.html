@@ -35,6 +35,7 @@ section.content{flex:1; overflow-y:auto; padding:20px 24px}
 .toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px}
 .toolbar input[type=text]{background:var(--panel2); border:1px solid var(--border); color:#fff; border-radius:8px; padding:8px 12px; font-size:14px; min-width:220px}
 .tabs{display:flex; gap:4px; flex-wrap:wrap; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:8px}
+.hint{font-size:11.5px; color:var(--muted); margin:-8px 0 14px}
 .tab{padding:8px 14px; border-radius:8px 8px 0 0; cursor:pointer; font-size:13px; color:var(--muted); border:1px solid transparent}
 .tab:hover{color:#fff}
 .tab.active{background:var(--panel2); color:#fff; border-color:var(--border)}
@@ -110,6 +111,7 @@ ul.errs li{margin:3px 0}
       </div>
       <div id="msgs"></div>
       <div class="tabs" id="tabs"></div>
+      <div class="hint">Los campos vacíos son opcionales o no se mencionaron en el chat. Usa «Validar» para ver qué falta.</div>
       <div id="form-area"></div>
       <div id="download-area"></div>
     </div>
@@ -198,6 +200,7 @@ const TABS = [
    F('applicant.last_name','Apellido','text',{req:1,ph:'Pérez'}),
    F('applicant.first_name','Nombre','text',{req:1,ph:'María'}),
    F('applicant.middle_name','Segundo nombre'),
+   F('applicant.other_names','Otros nombres usados (soltera, alias)'),
    F('applicant.dob','Fecha de nacimiento','text',{req:1,ph:'1990-05-14'}),
    F('applicant.gender','Sexo','select',{options:SEL_GENDER}),
    F('applicant.marital_status','Estado civil','select',{options:SEL_MARITAL}),
@@ -229,6 +232,8 @@ const TABS = [
    F('applicant.mailing_city','Ciudad postal'),
    F('applicant.mailing_state','Estado postal'),
    F('applicant.mailing_zip','Código postal (postal)'),
+   F('applicant.mailing_phone_area','Teléfono postal (código de área)','text',{ph:'305'}),
+   F('applicant.mailing_phone','Teléfono postal (7 dígitos)','text',{ph:'5551234'}),
  ]},
  {id:'entrada', label:'🛂 Entrada a EE. UU.', fields:[
    F('applicant.passport_country','País que emitió el pasaporte'),
@@ -275,9 +280,11 @@ const TABS = [
    F('signature.attorney_uscis_account','Cuenta USCIS del abogado'),
    F('signature.preparer_print_name','Preparador — nombre'),
    F('signature.preparer_street','Preparador — calle'),
+   F('signature.preparer_apt','Preparador — apartamento'),
    F('signature.preparer_city','Preparador — ciudad'),
    F('signature.preparer_state','Preparador — estado'),
    F('signature.preparer_zip','Preparador — código postal'),
+   F('signature.preparer_phone_area','Preparador — código de área'),
    F('signature.preparer_phone','Preparador — teléfono'),
  ]},
  {id:'narrativa', label:'📝 Narrativa', fields:[
@@ -287,12 +294,12 @@ const TABS = [
 ];
 
 /* ============ Render de pestañas con bloques dinámicos ============ */
-function arrayBlock(title, list, template, maxItems, emptyMsg, canAdd=true){
+function arrayBlock(title, list, template, maxItems, emptyMsg, base, canAdd=true){
   let html = `<div class="section-title">${title}</div>`;
   list.forEach((item, i)=>{
     html += `<div class="array-block"><div class="array-head">
       <span class="t">${title.replace(/s$|es$/,'')} ${i+1}</span>
-      <button class="danger small" data-remove="${i}">Quitar</button></div>
+      <button class="danger small" data-remove="${i}" data-base="${base}">Quitar</button></div>
       <div class="form-grid">${template.map(f=>{
         const d = {...f, path: f.path.replace('{i}', i)};
         return `<div class="field ${f.full?'full':''}"><label>${esc(f.label)}${f.req?' <span class="req">*</span>':''}</label>${fieldInput(d, d.path)}</div>`;
@@ -300,7 +307,7 @@ function arrayBlock(title, list, template, maxItems, emptyMsg, canAdd=true){
   });
   if(!list.length) html += `<div class="field full" style="color:var(--muted);font-size:12px">${emptyMsg}</div>`;
   if(canAdd && list.length < maxItems)
-    html += `<button class="ghost small" data-add="1">+ Añadir (${list.length}/${maxItems})</button>`;
+    html += `<button class="ghost small" data-add="1" data-base="${base}" data-add-max="${maxItems}">+ Añadir ${base==='applicant.entries'?'entrada':''} (${list.length}/${maxItems})</button>`;
   return html;
 }
 
@@ -313,6 +320,15 @@ function renderTab(){
   for(const f of tab.fields){
     html += `<div class="field ${f.full?'full':''}"><label>${esc(f.label)}${f.req?' <span class="req">*</span>':''}</label>${fieldInput(f, f.path)}</div>`;
   }
+  if(state.activeTab==='entrada'){
+    const entradas = (d.applicant && d.applicant.entries) || [];
+    html += arrayBlock('Entradas a EE. UU. (la más reciente primero, máx. 3)', entradas, [
+      F('applicant.entries.{i}.date','Fecha de entrada','text',{ph:'2023-01-12'}),
+      F('applicant.entries.{i}.place','Lugar de entrada','text',{ph:'El Paso, Texas'}),
+      F('applicant.entries.{i}.status','Estatus al entrar','text',{ph:'B-2 / sin inspección'}),
+      F('applicant.entries.{i}.status_expires','Vencimiento del estatus','text',{ph:'2023-07-11'}),
+    ], 3, 'Sin entradas registradas.', 'applicant.entries');
+  }
   // bloques dinámicos por pestaña
   if(state.activeTab==='direcciones'){
     html += arrayBlock('Últimas direcciones en el extranjero (A.III.1)', d.addresses_abroad||[], [
@@ -322,7 +338,7 @@ function renderTab(){
       F('addresses_abroad.{i}.country','País'),
       F('addresses_abroad.{i}.from_date','Desde (MM/YYYY)'),
       F('addresses_abroad.{i}.to_date','Hasta (MM/YYYY)'),
-    ], 2, 'Sin direcciones registradas en el extranjero.');
+    ], 2, 'Sin direcciones registradas en el extranjero.', 'addresses_abroad');
     html += arrayBlock('Residencias de los últimos 5 años (A.III.2)', d.residences||[], [
       F('residences.{i}.street','Calle y número','text',{full:1}),
       F('residences.{i}.city','Ciudad'),
@@ -330,7 +346,7 @@ function renderTab(){
       F('residences.{i}.country','País'),
       F('residences.{i}.from_date','Desde (MM/YYYY)'),
       F('residences.{i}.to_date','Hasta (MM/YYYY)'),
-    ], 5, 'Sin residencias. Se necesita al menos una (la actual).');
+    ], 5, 'Sin residencias. Se necesita al menos una (la actual).', 'residences');
   }
   if(state.activeTab==='familia'){
     const sp = d.spouse || {};
@@ -349,6 +365,7 @@ function renderTab(){
       F('spouse.entry_place','Lugar de última entrada'), F('spouse.entry_date','Fecha de última entrada','text',{ph:'2023-01-15'}),
       F('spouse.i94_number','Número I-94'), F('spouse.entry_status','Estatus al entrar'),
       F('spouse.current_status','Estatus actual'), F('spouse.status_expiration','Vencimiento de estancia','text',{ph:'2026-05-01'}),
+      F('spouse.previous_arrival_date','Fecha de llegada previa a EE. UU.','text',{ph:'2022-05-01'}),
       F('spouse.in_proceedings','¿En corte de inmigración?','tri'),
       F('spouse.included_in_application','¿Incluido/a en esta solicitud?','tri'),
     ];
@@ -368,7 +385,7 @@ function renderTab(){
       F('children.{i}.current_status','Estatus actual'), F('children.{i}.status_expiration','Vencimiento','text',{ph:'2026-05-01'}),
       F('children.{i}.in_proceedings','¿En corte?','tri'),
       F('children.{i}.included_in_application','¿Incluido/a?','tri'),
-    ], 6, 'Sin hijos registrados.');
+    ], 6, 'Sin hijos registrados.', 'children');
   }
   if(state.activeTab==='antecedentes'){
     html += arrayBlock('Hermanos (máx. 4)', d.siblings||[], [
@@ -376,7 +393,7 @@ function renderTab(){
       F('siblings.{i}.birth_city_country','Ciudad/país de nacimiento'),
       F('siblings.{i}.current_location','Ubicación actual'),
       F('siblings.{i}.deceased','Fallecido/a','bool'),
-    ], 4, 'Sin hermanos registrados.');
+    ], 4, 'Sin hermanos registrados.', 'siblings');
   }
   if(state.activeTab==='empleo'){
     html += arrayBlock('Educación (más reciente primero, máx. 4)', d.education||[], [
@@ -385,13 +402,13 @@ function renderTab(){
       F('education.{i}.location','Ubicación (dirección)'),
       F('education.{i}.from_date','Desde (MM/YYYY)'),
       F('education.{i}.to_date','Hasta (MM/YYYY)'),
-    ], 4, 'Sin historial educativo registrado.');
+    ], 4, 'Sin historial educativo registrado.', 'education');
     html += arrayBlock('Empleo de los últimos 5 años (máx. 3)', d.employment||[], [
       F('employment.{i}.employer','Nombre y dirección del empleador','text',{full:1}),
       F('employment.{i}.occupation','Ocupación'),
       F('employment.{i}.from_date','Desde (MM/YYYY)'),
       F('employment.{i}.to_date','Hasta (MM/YYYY)'),
-    ], 3, 'Sin empleos registrados.');
+    ], 3, 'Sin empleos registrados.', 'employment');
   }
   if(state.activeTab==='preguntas'){
     const BQS = [
@@ -418,7 +435,7 @@ function renderTab(){
     html += arrayBlock('Familiares que ayudaron a completar (máx. 2)', d.signature?.assistants||[], [
       F('signature.assistants.{i}.name','Nombre'),
       F('signature.assistants.{i}.relationship','Parentesco'),
-    ], 2, 'Sin ayudantes registrados.');
+    ], 2, 'Sin ayudantes registrados.', 'signature.assistants');
   }
   html += '</div>';
   $('form-area').innerHTML = html;
@@ -426,41 +443,25 @@ function renderTab(){
   // eventos de añadir/quitar en bloques
   $('form-area').querySelectorAll('[data-add]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const tab = TABS.find(t=>t.id===state.activeTab);
-      const map = {
-        direcciones: [['addresses_abroad',2],['residences',5]],
-        familia: [['children',6]],
-        antecedentes: [['siblings',4]],
-        empleo: [['education',4],['employment',3]],
-        firma: [['signature.assistants',2]],
-      }[state.activeTab]||[];
-      // añadir al primer bloque con espacio
-      for(const [base,max] of map){
-        const arr = getPath(state.data, base)||[];
-        if(arr.length < max){ arr.push(emptyFor(base)); renderTab(); return; }
-      }
+      const base = btn.dataset.base;
+      const max = +btn.dataset.addMax || 1;
+      let arr = getPath(state.data, base);
+      if(!Array.isArray(arr)){ setPath(state.data, base, []); arr = getPath(state.data, base); }
+      if(arr.length < max){ arr.push(emptyFor(base)); renderTab(); }
     });
   });
   $('form-area').querySelectorAll('[data-remove]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const i = +btn.dataset.remove;
-      const tab = TABS.find(t=>t.id===state.activeTab);
-      const map = {
-        direcciones: ['addresses_abroad','residences'],
-        familia: ['children'],
-        antecedentes: ['siblings'],
-        empleo: ['education','employment'],
-        firma: ['signature.assistants'],
-      }[state.activeTab]||[];
-      for(const base of map){
-        const arr = getPath(state.data, base)||[];
-        if(arr.length > i){ arr.splice(i,1); renderTab(); return; }
-      }
+      const base = btn.dataset.base;
+      const arr = getPath(state.data, base)||[];
+      if(i < arr.length){ arr.splice(i,1); renderTab(); }
     });
   });
 }
 
 function emptyFor(base){
+  if(base === 'applicant.entries') return {date:'',place:'',status:'',status_expires:''};
   if(base.includes('assistants')) return {name:'',relationship:''};
   if(base.includes('children')) return {last_name:'',first_name:'',middle_name:'',dob:'',gender:'',marital_status:'',birth_city_country:'',nationality:'',race_ethnic_group:'',a_number:'',passport:'',ssn:'',in_us:null,location_if_abroad:'',entry_place:'',entry_date:'',i94_number:'',entry_status:'',current_status:'',status_expiration:'',in_proceedings:null,included_in_application:null};
   if(base.includes('education')) return {name:'',type:'',location:'',from_date:'',to_date:''};
@@ -517,7 +518,9 @@ function ensureDefaults(d){
     signature:{assistants:[]},
     narrative:'', supplement_b_continuation:''
   };
-  d.applicant = Object.assign({aliases:[],entries:[]}, d.applicant||{});
+  d.applicant = Object.assign({aliases:[],entries:[],other_names:''}, d.applicant||{});
+  // CAT (Convención contra la Tortura): marcada por defecto, coherente con el backend
+  if(d.applicant.cat_withholding == null) d.applicant.cat_withholding = true;
   for(const k in DEFAULTS){ if(d[k]==null) d[k] = DEFAULTS[k]; }
   // cónyuge vacío => null (para que la validación no lo cuente como datos incompletos)
   d.spouse = (d.spouse && (d.spouse.last_name || d.spouse.first_name || d.spouse.not_married)) ? d.spouse : null;

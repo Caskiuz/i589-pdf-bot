@@ -1443,9 +1443,6 @@
   }
  },
  "preparer": {
-  "signature_name": {
-   "field": "form1[0].#subform[10].PtE_PreparerSignature[0]"
-  },
   "print_name": {
    "field": "form1[0].#subform[10].PtE_PreparerName[0]"
   },
@@ -1480,9 +1477,6 @@
   },
   "date": {
    "field": "form1[0].#subform[12].DateTimeField57[0]"
-  },
-  "signature_name": {
-   "field": "form1[0].#subform[12].TextField28[0]"
   }
  },
  "supplement_b": {
@@ -1495,16 +1489,8 @@
   "date": {
    "field": "form1[0].#subform[13].DateTimeField58[0]"
   },
-  "continuation": [
-   {
-    "field": "form1[0].#subform[13].TextField31[0]"
-   },
-   {
-    "field": "form1[0].#subform[13].TextField31[1]"
-   },
-   {
-    "field": "form1[0].#subform[13].TextField32[0]"
-   }
-  ]
+  "continuation": {
+   "field": "form1[0].#subform[13].TextField32[0]"
+  }
  }
 }
