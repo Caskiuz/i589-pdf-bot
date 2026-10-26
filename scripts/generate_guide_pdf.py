@@ -212,9 +212,9 @@ bullets([
 h1("2. Lo que hay que probar (5–10 minutos)")
 h2("Paso 0 — Abrir el sistema")
 p("Entra al link. Verás arriba tres indicadores en verde: <b>IA: conectada</b>, "
-  "<b>pdftk: listo</b> y <b>Formulario: 07/28/26 ✓</b>. El último indica la edición del "
+  "<b>pdftk: listo</b> y <b>Formulario: 07/28/26 (actualizado)</b>. El último indica la edición del "
   "formulario oficial en uso; el sistema revisa por su cuenta si USCIS publicó una edición "
-  "nueva y te avisa ahí mismo (en ámbar: <b>⚠ nueva edición</b>). Abajo a la izquierda, la "
+  "nueva y te avisa ahí mismo (en ámbar: <b>«nueva edición»</b>). Abajo a la izquierda, la "
   "lista de casos.")
 
 h2("Paso 1 — Caso de ejemplo ya preparado")
