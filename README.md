@@ -9,7 +9,7 @@ Flujo de trabajo:
 3. **Revisar y corregir** los datos en el formulario editable por secciones (la IA propone, el humano confirma).
 4. **Generar el PDF** con los datos rellenados en el formulario oficial.
 
-> ⚠️ **Punto crítico (por diseño):** el PDF **NO se aplana** (no flatten). Todos los campos quedan editables y el JavaScript interno del formulario permanece vivo, por lo que **el código de barras 2D se genera automáticamente al abrir el documento en Adobe Acrobat Reader**. En visores web (Chrome, navegador) el código de barras no se ve — no es un defecto, es el comportamiento oficial del formulario.
+> ⚠️ **Puntos críticos (por diseño):** el PDF **NO se aplana** (no flatten): todos los campos quedan editables. El I-589 oficial es un PDF **híbrido XFA + AcroForm**; el sistema rellena los campos AcroForm y genera el PDF con `drop_xfa`, de modo que **Adobe Acrobat y cualquier visor muestran los datos rellenados** (sin esa opción, Acrobat prioriza la capa XFA vacía y el documento se ve en blanco). El **código de barras 2D** (PDF417) ya viene dibujado en el formulario oficial —su contenido es el identificador del formulario, la edición y el número de página, no los datos del solicitante— y se conserva intacto.
 
 ---
 
@@ -68,7 +68,7 @@ scripts/                  # setup, descarga del formulario, inventario y mapeo
 tests/                    # pytest (unidad + integración con pdftk real)
 ```
 
-**Por qué XFDF + pdftk y no aplanar:** el formulario de USCIS lleva un código de barras 2D (PDF417) que calcula un JavaScript embebido al abrirse en Acrobat. Si se aplanara o se reescribiera el PDF con otra librería, ese script se perdería y el código de barras no se generaría. `pdftk fill_form` inyecta los valores sin tocar la estructura ni los scripts.
+**Por qué XFDF + pdftk y `drop_xfa`:** el formulario de USCIS es un PDF híbrido (XFA + AcroForm). Rellenar solo la capa AcroForm deja la capa XFA vacía, y Adobe Acrobat prioriza XFA al abrir el documento: por eso el PDF puede verse "en blanco" aunque los valores estén escritos. Con `pdftk fill_form … drop_xfa` se elimina la capa XFA y Acrobat renderiza los campos AcroForm con sus apariencias (los datos visibles), manteniendo el formulario editable y sin aplanar. El código de barras 2D es una imagen ya incluida en el formulario oficial (su contenido es `I-589|edición|página`) y se conserva tal cual.
 
 **Por qué DeepSeek:** API compatible con OpenAI, disponible desde Venezuela sin restricciones, con modo *strict function calling* (schema JSON garantizado). El módulo `app/ai/` está aislado: cambiar de proveedor solo toca `client.py` y `extractor.py`.
 

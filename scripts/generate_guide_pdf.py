@@ -259,17 +259,20 @@ p("Clic en <b>«Generar PDF»</b>. Aparece el enlace <b>«Descargar»</b>. Desca
 p("<b>Qué hace el sistema:</b> crea un archivo de datos (XFDF) con toda la información y lo "
   "fusiona con el formulario oficial de USCIS (edición 07/28/26) usando pdftk. <b>No aplana "
   "el PDF</b>: todos los campos quedan editables y el JavaScript interno del formulario se "
-  "mantiene intacto. La narrativa de persecución se escribe completa en el Suplemento B.")
+  "mantiene intacto. La narrativa de persecución se escribe completa en el Suplemento B. El "
+  "sistema <b>nunca modifica el archivo original descargado de USCIS</b>: siempre genera una "
+  "copia nueva rellenada.")
 
 h2("Paso 6 — La prueba clave: el código de barras")
-p("Abre el PDF descargado <b>en Adobe Acrobat Reader</b> (importante: no en el navegador).")
-p("<b>Qué debes ver:</b> el formulario llenado y, al final de cada página, el <b>código de "
-  "barras 2D</b> que se genera automáticamente al abrir el documento. Ese código es el que "
-  "USCIS exige para leer el formulario.")
-p("<b>Por qué:</b> el formulario oficial usa un JavaScript interno que calcula el código de "
-  "barras al abrirlo en Acrobat. Como el sistema nunca aplana el PDF, ese JavaScript sigue "
-  "vivo y el código se genera solo. En visores web (Chrome, navegador) el código no se ve: "
-  "es normal, no es un defecto.")
+p("Abre el PDF descargado <b>en Adobe Acrobat Reader</b> (recomendado para la revisión final).")
+p("<b>Qué debes ver:</b> el formulario llenado y, al pie de cada página, el <b>código de "
+  "barras 2D</b> que ya trae el formulario oficial de USCIS (identifica el formulario I-589, "
+  "la edición y el número de página). El sistema lo conserva intacto, sin redibujarlo ni "
+  "aplanarlo, por eso se ve correctamente en Acrobat y en los demás visores.")
+p("<b>Por qué:</b> el formulario oficial es un PDF híbrido (XFA + Acrobat). Al rellenarlo, "
+  "el sistema retira la capa XFA vacía que hacía que Acrobat mostrara el documento como si "
+  "estuviera en blanco. Así los datos y el código de barras se ven bien en todos los "
+  "visores, y los campos siguen editables.")
 
 h1("3. Checklist de aceptación")
 checklist_table([
@@ -280,7 +283,7 @@ checklist_table([
     ("4", "Borrar un dato crítico y Validar", "El sistema bloquea y señala el campo"),
     ("5", "Completar y Validar", "Mensaje «Datos completos»"),
     ("6", "Generar PDF y descargar", "PDF de 12 páginas con los datos"),
-    ("7", "Abrir en Acrobat Reader", "Código de barras 2D visible y formado"),
+    ("7", "Abrir en Acrobat Reader", "Datos visibles y código de barras 2D al pie de cada página"),
     ("8", "Editar un campo del PDF en Acrobat", "El campo sigue editable (no aplanado)"),
 ])
 

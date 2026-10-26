@@ -173,8 +173,9 @@ def generar(case_id: str, payload: dict) -> dict:
         "verificado": verified,
         "advertencias": result.warnings,
         "nota_barcode": (
-            "Abre el PDF en Adobe Acrobat Reader para que el código de barras 2D "
-            "se genere automáticamente (el JavaScript del formulario se ejecuta al abrir)."
+            "Abre el PDF en Adobe Acrobat Reader para revisarlo. El código de barras 2D "
+            "ya viene incluido en el formulario oficial y se conserva intacto; los datos "
+            "se muestran correctamente en Acrobat y en los demás visores."
         ),
     }
 

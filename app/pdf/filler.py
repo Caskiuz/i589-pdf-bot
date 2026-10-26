@@ -389,6 +389,11 @@ def fill_pdf(data: I589Data, case_id: str, case_name: str = "") -> Path:
             xfdf_path,
             "output",
             str(out_path),
+            # El I-589 oficial es un PDF híbrido XFA+AcroForm. Sin esta opción,
+            # Adobe Acrobat prioriza la capa XFA (vacía) y muestra el formulario
+            # como si no se hubiera rellenado. drop_xfa elimina esa capa y deja
+            # el AcroForm rellenado visible en todos los visores.
+            "drop_xfa",
         ]
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
         if proc.returncode != 0:

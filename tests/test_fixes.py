@@ -143,3 +143,33 @@ def test_fill_familia_end_to_end():
     assert verify_filled(out, "form1[0].#subform[1].NotMarried[0].PtAIILine5_LastName[0]", "Torres")
     assert verify_filled(out, "form1[0].#subform[1].ChildLast1[0]", "García Torres")
     assert verify_filled(out, "form1[0].#subform[12].TextField12[0]", "García Torres")
+
+
+@pytest.mark.skipif(pdftk_missing or not BLANK_PDF.exists(), reason="requiere pdftk y el formulario")
+def test_pdf_generado_sin_xfa_con_apariencias_y_js():
+    """Regresión: sin drop_xfa, Acrobat prioriza la capa XFA vacía y el PDF se ve en blanco."""
+    from pypdf import PdfReader
+
+    data = load(CASO)
+    out = fill_pdf(data, "xfatest123456", "prueba_xfa")
+    reader = PdfReader(str(out))
+    acro = reader.trailer["/Root"].get("/AcroForm")
+    assert acro is not None
+    assert acro.get("/XFA") is None, "el PDF final no debe conservar la capa XFA"
+
+    fields = reader.get_fields() or {}
+    apellido = fields["form1[0].#subform[0].PtAILine4_LastName[0]"]
+    assert apellido.get("/V") == "Pérez Rodríguez"
+
+    con_valor = con_ap = 0
+    for page in reader.pages:
+        for annot in (page.get("/Annots") or []):
+            obj = annot.get_object()
+            if obj.get("/Subtype") == "/Widget" and obj.get("/T") and obj.get("/V") not in (None, "", "/Off"):
+                con_valor += 1
+                if obj.get("/AP"):
+                    con_ap += 1
+    assert con_valor > 50
+    assert con_valor == con_ap, "todos los campos con valor deben tener apariencia dibujada"
+    # El JavaScript interno del formulario (código de barras 2D) sigue presente
+    assert b"/JS" in out.read_bytes()
