@@ -519,7 +519,8 @@ function ensureDefaults(d){
   };
   d.applicant = Object.assign({aliases:[],entries:[]}, d.applicant||{});
   for(const k in DEFAULTS){ if(d[k]==null) d[k] = DEFAULTS[k]; }
-  d.spouse = d.spouse||{};
+  // cónyuge vacío => null (para que la validación no lo cuente como datos incompletos)
+  d.spouse = (d.spouse && (d.spouse.last_name || d.spouse.first_name || d.spouse.not_married)) ? d.spouse : null;
   d.mother = d.mother||{}; d.father = d.father||{};
   d.basis = Object.assign(DEFAULTS.basis, d.basis||{});
   d.questions = Object.assign(DEFAULTS.questions, d.questions||{});
@@ -580,9 +581,10 @@ async function doGenerate(){
 
 /* ============ Inicialización ============ */
 $('btn-new').addEventListener('click', async ()=>{
-  const nombre = prompt('Nombre del caso (ej. García, María):') || 'Nuevo caso';
-  const c = await api('POST','/api/casos',{nombre, texto:''});
+  const c = await api('POST','/api/casos',{nombre:'Nuevo caso', texto:''});
   await loadCases(); openCase(c.id);
+  $('case-name').focus();
+  $('case-name').select();
 });
 $('btn-toggle-chat').addEventListener('click', ()=> $('whatsapp-box').classList.toggle('show'));
 $('btn-extraer').addEventListener('click', doExtract);
